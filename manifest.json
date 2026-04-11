@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Polyglot",
+  "version": "1.0",
+  "description": "Language immersion engine — article mining and vocab grinder for EN/ES/RU/AR",
+  "sidebar_action": {
+    "default_title": "Polyglot",
+    "default_panel": "index.html"
+  },
+  "browser_action": {
+    "default_title": "Open Polyglot"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}
