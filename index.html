@@ -3,1514 +3,1387 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Polyglot — Language Immersion Engine</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<title>CCE-G // Polyglot</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0a0f;
-    --bg2: #111118;
-    --bg3: #18181f;
-    --bg4: #1e1e28;
-    --border: #2a2a38;
-    --border2: #383848;
-    --text: #e8e8f0;
-    --muted: #8888a0;
-    --accent-en: #4fc3f7;
-    --accent-es: #f97316;
-    --accent-ru: #c084fc;
-    --accent-ar: #34d399;
-    --accent-quiz: #fbbf24;
-    --font-mono: 'Space Mono', monospace;
-    --font-serif: 'Crimson Pro', serif;
-    --radius: 6px;
-    --radius-lg: 10px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+:root{
+  --bg:#07070d;--bg2:#0f0f18;--bg3:#16161f;--bg4:#1c1c28;
+  --border:#252535;--border2:#353548;--text:#e8e8f0;--muted:#7878a0;
+  --en:#4fc3f7;--es:#f97316;--ru:#c084fc;--ar:#34d399;
+  --de:#fbbf24;--ja:#f472b6;--zh:#a78bfa;--sa:#fb923c;
+  --quiz:#fbbf24;--r:6px;--rl:10px;
+  --mono:'Space Mono',monospace;--serif:'Crimson Pro',serif;
+  --green:#34d399;--red:#f87171;--blue:#60a5fa;--purple:#c084fc;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.6;min-height:100vh;}
 
-  /* --- TOP NAV --- */
-  .topbar {
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 0;
-    height: 52px;
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 100;
-  }
-  .logo {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--text);
-    margin-right: 32px;
-    text-decoration: none;
-  }
-  .logo span { color: var(--accent-quiz); }
-  .nav-tabs {
-    display: flex;
-    gap: 0;
-    flex: 1;
-  }
-  .nav-tab {
-    padding: 0 20px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    transition: all 0.15s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    text-transform: uppercase;
-  }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { color: var(--text); border-bottom-color: var(--accent-quiz); }
-  .nav-tab .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    display: inline-block;
-  }
+/* ===== LOGIN ===== */
+#login-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+}
+.login-box{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rl);
+  padding:48px 40px;width:360px;text-align:center;
+}
+.login-logo{font-size:22px;font-weight:700;letter-spacing:.15em;margin-bottom:4px;}
+.login-logo span{color:var(--quiz);}
+.login-sub{font-size:10px;color:var(--muted);letter-spacing:.12em;margin-bottom:32px;text-transform:uppercase;}
+.login-field{
+  width:100%;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--r);padding:11px 14px;color:var(--text);
+  font-family:var(--mono);font-size:13px;outline:none;margin-bottom:10px;
+  transition:border-color .15s;
+}
+.login-field:focus{border-color:var(--quiz);}
+.login-btn{
+  width:100%;padding:12px;background:rgba(251,191,36,.12);
+  border:1px solid rgba(251,191,36,.4);border-radius:var(--r);
+  color:var(--quiz);font-family:var(--mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;cursor:pointer;transition:all .15s;margin-top:4px;
+  text-transform:uppercase;
+}
+.login-btn:hover{background:rgba(251,191,36,.22);}
+.login-err{color:var(--red);font-size:11px;margin-top:8px;display:none;}
+.login-hint{font-size:9px;color:var(--border2);margin-top:16px;}
 
-  /* --- LANG PILLS --- */
-  .lang-bar {
-    display: flex;
-    gap: 8px;
-    padding: 12px 24px;
-    border-bottom: 1px solid var(--border);
-    align-items: center;
-    background: var(--bg2);
-  }
-  .lang-pill {
-    padding: 4px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    cursor: pointer;
-    border: 1.5px solid transparent;
-    transition: all 0.15s;
-    background: var(--bg3);
-    color: var(--muted);
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-  }
-  .lang-pill.active-en { background: rgba(79,195,247,0.12); color: var(--accent-en); border-color: var(--accent-en); }
-  .lang-pill.active-es { background: rgba(249,115,22,0.12); color: var(--accent-es); border-color: var(--accent-es); }
-  .lang-pill.active-ru { background: rgba(192,132,252,0.12); color: var(--accent-ru); border-color: var(--accent-ru); }
-  .lang-pill.active-ar { background: rgba(52,211,153,0.12); color: var(--accent-ar); border-color: var(--accent-ar); }
-  .lang-pill.active-all { background: rgba(251,191,36,0.12); color: var(--accent-quiz); border-color: var(--accent-quiz); }
-  .lang-info { margin-left: auto; font-size: 11px; color: var(--muted); }
+/* ===== MAIN APP ===== */
+#app{display:none;flex-direction:column;min-height:100vh;}
+#app.visible{display:flex;}
 
-  /* --- MAIN LAYOUT --- */
-  .main { display: flex; flex: 1; overflow: hidden; }
-  .sidebar {
-    width: 280px;
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    background: var(--bg2);
-    flex-shrink: 0;
-  }
-  .content { flex: 1; overflow-y: auto; padding: 24px; }
+.topbar{
+  border-bottom:1px solid var(--border);padding:0 18px;
+  display:flex;align-items:center;height:50px;
+  position:sticky;top:0;background:var(--bg);z-index:100;gap:0;
+}
+.logo{font-size:14px;font-weight:700;letter-spacing:.12em;margin-right:16px;white-space:nowrap;}
+.logo span{color:var(--quiz);}
+.logo small{font-size:8px;color:var(--muted);margin-left:4px;}
+.nav-tabs{display:flex;flex:1;overflow-x:auto;gap:0;}
+.nav-tab{
+  padding:0 13px;height:50px;display:flex;align-items:center;gap:5px;
+  cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);
+  font-family:var(--mono);font-size:11px;letter-spacing:.07em;
+  transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;
+  text-transform:uppercase;white-space:nowrap;
+}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--quiz);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.logout-btn{
+  margin-left:auto;padding:4px 10px;border:1px solid var(--border);
+  border-radius:var(--r);color:var(--muted);font-family:var(--mono);
+  font-size:10px;cursor:pointer;background:none;transition:all .15s;
+  white-space:nowrap;
+}
+.logout-btn:hover{color:var(--red);border-color:var(--red);}
 
-  /* --- SIDEBAR SECTIONS --- */
-  .sidebar-section {
-    border-bottom: 1px solid var(--border);
-    padding: 16px;
-  }
-  .sidebar-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    font-weight: 700;
-  }
-  .progress-lang {
-    margin-bottom: 12px;
-  }
-  .progress-lang-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    font-size: 11px;
-  }
-  .progress-bar {
-    height: 3px;
-    background: var(--bg4);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-  .stat-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .stat-box {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-    text-align: center;
-  }
-  .stat-num {
-    font-size: 20px;
-    font-weight: 700;
-    display: block;
-    color: var(--accent-quiz);
-  }
-  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .grind-timer {
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: var(--radius);
-    padding: 12px;
-    text-align: center;
-    margin-top: 4px;
-  }
-  .grind-time {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--accent-quiz);
-    letter-spacing: 0.08em;
-    display: block;
-    font-variant-numeric: tabular-nums;
-  }
-  .grind-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
-  .grind-btn {
-    margin-top: 8px;
-    width: 100%;
-    padding: 7px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border2);
-    background: var(--bg4);
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    cursor: pointer;
-    letter-spacing: 0.08em;
-    transition: all 0.15s;
-  }
-  .grind-btn:hover { border-color: var(--accent-quiz); color: var(--accent-quiz); }
-  .goal-bar { margin-top: 8px; }
-  .goal-text { font-size: 10px; color: var(--muted); text-align: right; margin-top: 4px; }
+.lang-bar{
+  display:flex;gap:5px;padding:8px 18px;border-bottom:1px solid var(--border);
+  align-items:center;background:var(--bg2);flex-wrap:wrap;
+}
+.lang-pill{
+  padding:3px 9px;border-radius:20px;font-size:9px;letter-spacing:.08em;
+  font-weight:700;cursor:pointer;border:1.5px solid transparent;
+  transition:all .15s;background:var(--bg3);color:var(--muted);
+  font-family:var(--mono);text-transform:uppercase;
+}
+.lp-all{background:rgba(251,191,36,.12);color:var(--quiz);border-color:var(--quiz);}
+.lp-en{background:rgba(79,195,247,.12);color:var(--en);border-color:var(--en);}
+.lp-es{background:rgba(249,115,22,.12);color:var(--es);border-color:var(--es);}
+.lp-ru{background:rgba(192,132,252,.12);color:var(--ru);border-color:var(--ru);}
+.lp-ar{background:rgba(52,211,153,.12);color:var(--ar);border-color:var(--ar);}
+.lp-de{background:rgba(251,191,36,.12);color:var(--de);border-color:var(--de);}
+.lp-ja{background:rgba(244,114,182,.12);color:var(--ja);border-color:var(--ja);}
+.lp-zh{background:rgba(167,139,250,.12);color:var(--zh);border-color:var(--zh);}
+.lp-sa{background:rgba(251,146,60,.12);color:var(--sa);border-color:var(--sa);}
 
-  /* --- ARTICLE CARDS --- */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .section-title {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 700;
-  }
-  .btn-sm {
-    padding: 5px 12px;
-    border-radius: var(--radius);
-    border: 1px solid var(--border2);
-    background: none;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 0.06em;
-  }
-  .btn-sm:hover { color: var(--text); border-color: var(--border2); }
-  .btn-primary {
-    background: rgba(251,191,36,0.1);
-    color: var(--accent-quiz);
-    border-color: rgba(251,191,36,0.3);
-  }
-  .btn-primary:hover { background: rgba(251,191,36,0.2); color: var(--accent-quiz); }
-  .articles-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 32px;
-  }
-  @media (max-width: 900px) { .articles-grid { grid-template-columns: 1fr; } }
-  .article-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.18s;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    position: relative;
-    overflow: hidden;
-  }
-  .article-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    transition: opacity 0.18s;
-  }
-  .article-card.lang-en::before { background: var(--accent-en); }
-  .article-card.lang-es::before { background: var(--accent-es); }
-  .article-card.lang-ru::before { background: var(--accent-ru); }
-  .article-card.lang-ar::before { background: var(--accent-ar); }
-  .article-card:hover { border-color: var(--border2); background: var(--bg3); transform: translateY(-1px); }
-  .article-card.read { opacity: 0.55; }
-  .article-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .lang-badge {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 3px;
-    text-transform: uppercase;
-  }
-  .badge-en { background: rgba(79,195,247,0.15); color: var(--accent-en); }
-  .badge-es { background: rgba(249,115,22,0.15); color: var(--accent-es); }
-  .badge-ru { background: rgba(192,132,252,0.15); color: var(--accent-ru); }
-  .badge-ar { background: rgba(52,211,153,0.15); color: var(--accent-ar); }
-  .topic-badge {
-    font-size: 10px;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 2px 7px;
-    border-radius: 3px;
-  }
-  .article-title {
-    font-family: var(--font-serif);
-    font-size: 15px;
-    font-weight: 400;
-    line-height: 1.4;
-    color: var(--text);
-  }
-  .article-snippet {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .article-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 4px;
-  }
-  .read-time { font-size: 10px; color: var(--muted); }
-  .article-actions { display: flex; gap: 6px; }
-  .icon-btn {
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--muted);
-    cursor: pointer;
-    padding: 3px 8px;
-    font-size: 11px;
-    font-family: var(--font-mono);
-    transition: all 0.15s;
-  }
-  .icon-btn:hover { color: var(--text); border-color: var(--border2); }
-  .icon-btn.done { color: var(--accent-en); border-color: rgba(79,195,247,0.3); }
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 100px);}
+.sidebar{
+  width:240px;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+  background:var(--bg2);flex-shrink:0;
+}
+.content{flex:1;overflow-y:auto;padding:18px;}
+.ss{border-bottom:1px solid var(--border);padding:12px;}
+.sl{font-size:9px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;font-weight:700;}
 
-  /* --- VOCAB PANEL --- */
-  .vocab-panel {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-  .vocab-header {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .vocab-title { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-  .vocab-table { width: 100%; border-collapse: collapse; }
-  .vocab-table th {
-    padding: 8px 16px;
-    text-align: left;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    border-bottom: 1px solid var(--border);
-    background: var(--bg3);
-    font-weight: 700;
-  }
-  .vocab-table td {
-    padding: 9px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .vocab-table tr:last-child td { border-bottom: none; }
-  .vocab-table tr:hover td { background: var(--bg3); }
-  .word-native {
-    font-family: var(--font-serif);
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .mastery-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 4px;
-  }
-  .mastery-0 { background: var(--border2); }
-  .mastery-1 { background: var(--accent-quiz); }
-  .mastery-2 { background: #86efac; }
-  .mastery-3 { background: var(--accent-en); }
+/* Timer */
+.grind-time{font-size:24px;font-weight:700;color:var(--quiz);letter-spacing:.08em;display:block;font-variant-numeric:tabular-nums;}
+.grind-btn{margin-top:6px;width:100%;padding:6px;border-radius:var(--r);border:1px solid var(--border2);background:var(--bg4);color:var(--text);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;}
+.grind-btn:hover{border-color:var(--quiz);color:var(--quiz);}
 
-  /* --- QUIZ PANEL --- */
-  .quiz-container {
-    max-width: 640px;
-    margin: 0 auto;
-  }
-  .quiz-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 32px;
-    text-align: center;
-  }
-  .quiz-lang-label {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-  .quiz-word {
-    font-family: var(--font-serif);
-    font-size: 42px;
-    font-weight: 300;
-    margin-bottom: 8px;
-    line-height: 1.2;
-  }
-  .quiz-word.ar { font-size: 48px; direction: rtl; }
-  .quiz-word.ru { font-size: 42px; }
-  .quiz-context {
-    font-size: 12px;
-    color: var(--muted);
-    font-style: italic;
-    margin-bottom: 28px;
-    font-family: var(--font-serif);
-  }
-  .quiz-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .quiz-option {
-    background: var(--bg3);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 16px;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--text);
-    transition: all 0.15s;
-    text-align: left;
-  }
-  .quiz-option:hover { border-color: var(--border2); background: var(--bg4); }
-  .quiz-option.correct { border-color: #34d399; background: rgba(52,211,153,0.1); color: #34d399; }
-  .quiz-option.wrong { border-color: #f87171; background: rgba(248,113,113,0.1); color: #f87171; }
-  .quiz-skip { background: none; border: none; color: var(--muted); font-family: var(--font-mono); font-size: 11px; cursor: pointer; margin-top: 8px; }
-  .quiz-skip:hover { color: var(--text); }
-  .quiz-streak {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .streak-item { text-align: center; }
-  .streak-num { font-size: 24px; font-weight: 700; display: block; }
-  .streak-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .quiz-feedback {
-    padding: 12px 16px;
-    border-radius: var(--radius);
-    margin-top: 12px;
-    font-size: 12px;
-    display: none;
-  }
-  .quiz-feedback.show { display: block; }
-  .quiz-feedback.correct-fb { background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: #34d399; }
-  .quiz-feedback.wrong-fb { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.stat-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px;text-align:center;}
+.stat-num{font-size:17px;font-weight:700;display:block;color:var(--quiz);}
+.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;}
 
-  /* --- ALPHABET MODULE --- */
-  .alpha-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .alpha-card {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px 8px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .alpha-card:hover { border-color: var(--border2); }
-  .alpha-card.learned { border-color: rgba(52,211,153,0.4); background: rgba(52,211,153,0.06); }
-  .alpha-char {
-    font-family: var(--font-serif);
-    font-size: 26px;
-    display: block;
-    line-height: 1.2;
-  }
-  .alpha-roman { font-size: 10px; color: var(--muted); margin-top: 3px; }
+/* Progress bars */
+.prog-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:3px;}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s;}
 
-  /* --- ARTICLE READER --- */
-  .reader-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.85);
-    z-index: 200;
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    overflow-y: auto;
-    padding: 32px 16px;
-  }
-  .reader-overlay.open { display: flex; }
-  .reader-panel {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    max-width: 740px;
-    width: 100%;
-    overflow: hidden;
-  }
-  .reader-topbar {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .reader-close {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    padding: 5px 12px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    transition: all 0.15s;
-  }
-  .reader-close:hover { color: var(--text); border-color: var(--border2); }
-  .reader-body { padding: 32px 40px; }
-  .reader-title {
-    font-family: var(--font-serif);
-    font-size: 26px;
-    font-weight: 400;
-    line-height: 1.35;
-    margin-bottom: 16px;
-  }
-  .reader-meta {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    font-size: 11px;
-    color: var(--muted);
-    flex-wrap: wrap;
-  }
-  .reader-text {
-    font-family: var(--font-serif);
-    font-size: 17px;
-    line-height: 1.85;
-    color: var(--text);
-  }
-  .reader-text.ar { direction: rtl; font-size: 19px; }
-  .reader-text p { margin-bottom: 1.2em; }
-  .reader-vocab {
-    margin-top: 32px;
-    border-top: 1px solid var(--border);
-    padding-top: 24px;
-  }
-  .vocab-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .vocab-chip {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 5px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: var(--font-serif);
-  }
-  .vocab-chip:hover { border-color: var(--accent-quiz); color: var(--accent-quiz); }
-  .vocab-chip.saved { border-color: rgba(251,191,36,0.4); color: var(--accent-quiz); background: rgba(251,191,36,0.08); }
+/* Pages */
+.page{display:none;}
+.page.active{display:block;}
 
-  /* --- SEARCH & FILTERS --- */
-  .search-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  .search-input {
-    flex: 1;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 9px 14px;
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .search-input::placeholder { color: var(--muted); }
-  .search-input:focus { border-color: var(--border2); }
-  .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-  .filter-chip {
-    padding: 4px 12px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: none;
-    color: var(--muted);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .filter-chip.active {
-    border-color: var(--accent-quiz);
-    color: var(--accent-quiz);
-    background: rgba(251,191,36,0.08);
-  }
+/* Buttons */
+.btn{padding:5px 12px;border-radius:var(--r);border:1px solid var(--border2);background:none;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .15s;}
+.btn:hover{color:var(--text);}
+.btn-y{background:rgba(251,191,36,.1);color:var(--quiz);border-color:rgba(251,191,36,.3);}
+.btn-y:hover{background:rgba(251,191,36,.2);}
+.btn-g{background:rgba(52,211,153,.1);color:var(--green);border-color:rgba(52,211,153,.3);}
+.btn-g:hover{background:rgba(52,211,153,.2);}
+.btn-b{background:rgba(96,165,250,.1);color:var(--blue);border-color:rgba(96,165,250,.3);}
+.btn-b:hover{background:rgba(96,165,250,.2);}
 
-  /* --- PAGES --- */
-  .page { display: none; }
-  .page.active { display: block; }
+/* Section headers */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.st{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);font-weight:700;}
 
-  /* --- MISC --- */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty-state p { font-size: 13px; margin-top: 8px; }
-  .divider { height: 1px; background: var(--border); margin: 24px 0; }
-  .inline-badge {
-    display: inline-block;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-weight: 700;
-    vertical-align: middle;
-    margin-left: 4px;
-  }
-  .badge-new { background: rgba(251,191,36,0.15); color: var(--accent-quiz); }
-  .badge-saved { background: rgba(79,195,247,0.15); color: var(--accent-en); }
+/* Search */
+.search-input{
+  flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:7px 11px;color:var(--text);
+  font-family:var(--mono);font-size:12px;outline:none;
+}
+.search-input::placeholder{color:var(--muted);}
+.search-input:focus{border-color:var(--border2);}
 
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+/* Article cards */
+.articles-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:24px;}
+@media(max-width:800px){.articles-grid{grid-template-columns:1fr;}}
+.acard{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);
+  padding:13px;cursor:pointer;transition:all .18s;
+  display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden;
+}
+.acard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.acard.l-en::before{background:var(--en);}
+.acard.l-es::before{background:var(--es);}
+.acard.l-ru::before{background:var(--ru);}
+.acard.l-ar::before{background:var(--ar);}
+.acard.l-de::before{background:var(--de);}
+.acard.l-ja::before{background:var(--ja);}
+.acard.l-zh::before{background:var(--zh);}
+.acard.l-sa::before{background:var(--sa);}
+.acard:hover{border-color:var(--border2);background:var(--bg3);transform:translateY(-1px);}
+.acard.read{opacity:.45;}
+.ameta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.lbadge{font-size:9px;letter-spacing:.08em;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;}
+.lb-en{background:rgba(79,195,247,.15);color:var(--en);}
+.lb-es{background:rgba(249,115,22,.15);color:var(--es);}
+.lb-ru{background:rgba(192,132,252,.15);color:var(--ru);}
+.lb-ar{background:rgba(52,211,153,.15);color:var(--ar);}
+.lb-de{background:rgba(251,191,36,.15);color:var(--de);}
+.lb-ja{background:rgba(244,114,182,.15);color:var(--ja);}
+.lb-zh{background:rgba(167,139,250,.15);color:var(--zh);}
+.lb-sa{background:rgba(251,146,60,.15);color:var(--sa);}
+.tbadge{font-size:9px;color:var(--muted);border:1px solid var(--border);padding:2px 5px;border-radius:3px;}
+.bias-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;}
+.bl{background:rgba(59,130,246,.15);color:#93c5fd;}
+.bll{background:rgba(147,197,253,.1);color:#bfdbfe;}
+.bc{background:rgba(107,114,128,.15);color:#9ca3af;}
+.blr{background:rgba(252,165,165,.1);color:#fca5a5;}
+.br{background:rgba(239,68,68,.15);color:#fca5a5;}
+.bw{background:rgba(107,114,128,.12);color:#9ca3af;}
+.bac{background:rgba(167,139,250,.15);color:var(--zh);}
+.atitle{font-family:var(--serif);font-size:14px;font-weight:400;line-height:1.4;color:var(--text);}
+.asnip{font-size:10px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.afooter{display:flex;align-items:center;justify-content:space-between;margin-top:3px;}
+.atime{font-size:9px;color:var(--muted);}
+.ibtns{display:flex;gap:4px;}
+.ibtn{background:none;border:1px solid var(--border);border-radius:3px;color:var(--muted);cursor:pointer;padding:2px 6px;font-size:9px;font-family:var(--mono);transition:all .15s;}
+.ibtn:hover{color:var(--text);}
+.ibtn.done{color:var(--en);border-color:rgba(79,195,247,.3);}
+
+/* Filter chips */
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;transition:all .15s;}
+.chip.active{border-color:var(--quiz);color:var(--quiz);background:rgba(251,191,36,.08);}
+
+/* Mine log */
+.mine-log{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px;max-height:140px;overflow-y:auto;font-size:10px;color:var(--muted);}
+.mle{padding:2px 0;border-bottom:1px solid var(--border);}
+.mle:last-child{border-bottom:none;}
+.mle.ok{color:var(--green);}
+.mle.er{color:var(--red);}
+
+/* Vocab table */
+.vtable{width:100%;border-collapse:collapse;}
+.vtable th{padding:7px 12px;text-align:left;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);background:var(--bg3);font-weight:700;}
+.vtable td{padding:7px 12px;border-bottom:1px solid var(--border);font-size:11px;}
+.vtable tr:hover td{background:var(--bg3);}
+.wn{font-family:var(--serif);font-size:13px;font-weight:600;}
+.md{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;}
+.m0{background:var(--border2)}.m1{background:var(--quiz)}.m2{background:#86efac}.m3{background:var(--en);}
+
+/* Quiz */
+.qcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:26px;text-align:center;}
+.qword{font-family:var(--serif);font-size:38px;font-weight:300;margin:14px 0 6px;line-height:1.2;}
+.qword.rtl{direction:rtl;font-size:42px;}
+.qword.cjk{font-size:50px;}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:18px 0 12px;}
+.qopt{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--text);transition:all .15s;text-align:left;}
+.qopt:hover{border-color:var(--border2);}
+.qopt.ok{border-color:var(--green);background:rgba(52,211,153,.1);color:var(--green);}
+.qopt.no{border-color:var(--red);background:rgba(248,113,113,.1);color:var(--red);}
+.qfb{padding:9px 12px;border-radius:var(--r);margin-top:9px;font-size:11px;display:none;}
+.qfb.show{display:block;}
+.qfb.ok{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green);}
+.qfb.no{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red);}
+
+/* Alphabet */
+.alpha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px;margin-bottom:12px;}
+.achar{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:9px 5px;text-align:center;cursor:pointer;transition:all .15s;}
+.achar:hover{border-color:var(--border2);}
+.achar.learned{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.06);}
+.ac{font-family:var(--serif);font-size:22px;display:block;line-height:1.2;}
+.ar2{font-size:8px;color:var(--muted);margin-top:2px;}
+
+/* Reader */
+.rover{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px;}
+.rover.open{display:flex;}
+.rpanel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);max-width:720px;width:100%;overflow:hidden;}
+.rtop{padding:11px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.rcls{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 9px;border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:10px;transition:all .15s;}
+.rcls:hover{color:var(--text);}
+.rbody{padding:26px 32px;}
+.rtitle{font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.35;margin-bottom:12px;}
+.rmeta{display:flex;gap:8px;margin-bottom:16px;font-size:10px;color:var(--muted);flex-wrap:wrap;align-items:center;}
+.rtext{font-family:var(--serif);font-size:16px;line-height:1.85;color:var(--text);}
+.rtext.rtl{direction:rtl;font-size:17px;}
+.rtext.cjk{font-size:16px;line-height:2.1;}
+.rtext p{margin-bottom:1em;}
+.rtext h3{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:1.4em 0 .4em;}
+.bias-bar{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 11px;margin-bottom:8px;}
+.bias-scale{flex:1;height:5px;background:linear-gradient(to right,#3b82f6,#93c5fd,#6b7280,#fca5a5,#ef4444);border-radius:3px;position:relative;}
+.bias-mk{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--text);border:2px solid var(--bg);transform:translateX(-50%);transition:left .3s;}
+.vchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.vchip{background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:3px 9px;font-size:11px;cursor:pointer;transition:all .15s;font-family:var(--serif);}
+.vchip:hover{border-color:var(--quiz);color:var(--quiz);}
+.vchip.saved{border-color:rgba(251,191,36,.4);color:var(--quiz);background:rgba(251,191,36,.08);}
+
+/* ===== CCE-G ===== */
+.cce-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+@media(max-width:800px){.cce-grid{grid-template-columns:1fr;}}
+.cce-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;}
+.cce-title{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:700;}
+.latex-input{
+  width:100%;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:10px 12px;color:var(--text);
+  font-family:var(--mono);font-size:11px;outline:none;resize:vertical;
+  min-height:180px;transition:border-color .15s;
+}
+.latex-input:focus{border-color:var(--border2);}
+.latex-output{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px;font-family:var(--mono);font-size:11px;color:var(--text);
+  min-height:120px;white-space:pre-wrap;word-break:break-word;overflow-y:auto;max-height:400px;
+}
+.idea-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px;margin-bottom:8px;
+}
+.idea-title{font-family:var(--serif);font-size:14px;color:var(--text);margin-bottom:6px;}
+.idea-latex{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:pre-wrap;background:var(--bg4);padding:8px;border-radius:var(--r);margin-top:6px;overflow-x:auto;}
+.node-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+.node-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px;cursor:pointer;transition:all .15s;
+}
+.node-card:hover{border-color:var(--border2);}
+.node-name{font-family:var(--serif);font-size:13px;font-weight:600;margin-bottom:4px;}
+.node-def{font-size:10px;color:var(--muted);line-height:1.5;}
+.node-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.ntag{font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid var(--border);color:var(--muted);}
+.strength-bar{height:2px;background:var(--border2);border-radius:1px;margin-top:6px;overflow:hidden;}
+.strength-fill{height:100%;background:var(--quiz);border-radius:1px;}
+.ai-status{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.spinner{display:inline-block;width:10px;height:10px;border:2px solid var(--border2);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Lang sections */
+.lang-section{margin-bottom:28px;}
+.lang-section-header{
+  display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border:1px solid var(--border);border-radius:var(--r);
+  background:var(--bg2);margin-bottom:10px;cursor:pointer;
+}
+.lang-section-header:hover{border-color:var(--border2);}
+.lang-flag{font-size:18px;}
+.lang-name{font-size:13px;font-weight:700;letter-spacing:.08em;}
+.lang-count{font-size:10px;color:var(--muted);margin-left:auto;}
+.lang-articles{display:none;}
+.lang-articles.open{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:800px){.lang-articles.open{grid-template-columns:1fr;}}
+
+/* Misc */
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:12px;}
+.inline-badge{display:inline-block;font-size:8px;letter-spacing:.08em;text-transform:uppercase;padding:1px 5px;border-radius:3px;font-weight:700;vertical-align:middle;margin-left:3px;}
+.ib-new{background:rgba(251,191,36,.15);color:var(--quiz);}
+.ib-live{background:rgba(52,211,153,.15);color:var(--green);}
+.ib-saved{background:rgba(79,195,247,.15);color:var(--en);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+.divider{height:1px;background:var(--border);margin:18px 0;}
+textarea{font-family:var(--mono);}
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
-<nav class="topbar">
-  <a class="logo">POLY<span>GLOT</span></a>
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showPage('feed')" id="tab-feed">
-      <span class="dot" style="background:var(--accent-en)"></span>FEED
-    </button>
-    <button class="nav-tab" onclick="showPage('vocab')" id="tab-vocab">
-      <span class="dot" style="background:var(--accent-quiz)"></span>VOCAB
-    </button>
-    <button class="nav-tab" onclick="showPage('quiz')" id="tab-quiz">
-      <span class="dot" style="background:var(--accent-es)"></span>QUIZ
-    </button>
-    <button class="nav-tab" onclick="showPage('alphabet')" id="tab-alphabet">
-      <span class="dot" style="background:var(--accent-ru)"></span>ALPHABET
-    </button>
-    <button class="nav-tab" onclick="showPage('saved')" id="tab-saved">
-      <span class="dot" style="background:var(--accent-ar)"></span>SAVED
-    </button>
+<!-- ===== LOGIN ===== -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">CCE-G // POLY<span>GLOT</span></div>
+    <div class="login-sub">Cognitive Compression Engine</div>
+    <input class="login-field" type="text" id="l-user" placeholder="Username" autocomplete="off">
+    <input class="login-field" type="password" id="l-pass" placeholder="Password" autocomplete="off" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ACCESS SYSTEM</button>
+    <div class="login-err" id="login-err">Invalid credentials.</div>
+    <div class="login-hint">Personal access only.</div>
   </div>
-</nav>
-
-<!-- LANG FILTER BAR -->
-<div class="lang-bar">
-  <button class="lang-pill active-all" id="pill-all" onclick="filterLang('all')">ALL</button>
-  <button class="lang-pill" id="pill-en" onclick="filterLang('en')">EN</button>
-  <button class="lang-pill" id="pill-es" onclick="filterLang('es')">ES</button>
-  <button class="lang-pill" id="pill-ru" onclick="filterLang('ru')">RU</button>
-  <button class="lang-pill" id="pill-ar" onclick="filterLang('ar')">AR</button>
-  <div class="lang-info" id="lang-info">Balanced across 4 languages</div>
 </div>
 
-<div class="main">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-label">Today's Grind</div>
-      <div class="grind-timer">
-        <span class="grind-time" id="timer-display">00:00:00</span>
-        <div class="grind-lbl">session time</div>
-        <div style="margin-top:10px;">
-          <div class="progress-bar" style="height:4px;">
-            <div class="progress-fill" id="goal-fill" style="width:0%;background:var(--accent-quiz);"></div>
+<!-- ===== MAIN APP ===== -->
+<div id="app">
+  <nav class="topbar">
+    <div class="logo">CCE-G<span>//</span>POLY<span>GLOT</span><small>v3</small></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('feed')" id="tab-feed"><span class="dot" style="background:var(--en)"></span>FEED</button>
+      <button class="nav-tab" onclick="showPage('langs')" id="tab-langs"><span class="dot" style="background:var(--ja)"></span>LANGUAGES</button>
+      <button class="nav-tab" onclick="showPage('mine')" id="tab-mine"><span class="dot" style="background:var(--green)"></span>DATA MINE</button>
+      <button class="nav-tab" onclick="showPage('cce')" id="tab-cce"><span class="dot" style="background:var(--purple)"></span>CCE-G</button>
+      <button class="nav-tab" onclick="showPage('vocab')" id="tab-vocab"><span class="dot" style="background:var(--quiz)"></span>VOCAB</button>
+      <button class="nav-tab" onclick="showPage('quiz')" id="tab-quiz"><span class="dot" style="background:var(--es)"></span>QUIZ</button>
+      <button class="nav-tab" onclick="showPage('alpha')" id="tab-alpha"><span class="dot" style="background:var(--ru)"></span>SCRIPTS</button>
+      <button class="nav-tab" onclick="showPage('saved')" id="tab-saved"><span class="dot" style="background:var(--zh)"></span>SAVED</button>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">LOGOUT</button>
+  </nav>
+
+  <div class="lang-bar">
+    <button class="lang-pill lp-all" id="pill-all" onclick="setLang('all')">ALL</button>
+    <button class="lang-pill" id="pill-en" onclick="setLang('en')">EN</button>
+    <button class="lang-pill" id="pill-es" onclick="setLang('es')">ES</button>
+    <button class="lang-pill" id="pill-ru" onclick="setLang('ru')">RU</button>
+    <button class="lang-pill" id="pill-ar" onclick="setLang('ar')">AR</button>
+    <button class="lang-pill" id="pill-de" onclick="setLang('de')">DE</button>
+    <button class="lang-pill" id="pill-ja" onclick="setLang('ja')">JA</button>
+    <button class="lang-pill" id="pill-zh" onclick="setLang('zh')">ZH</button>
+    <button class="lang-pill" id="pill-sa" onclick="setLang('sa')">SA</button>
+  </div>
+
+  <div class="main">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="ss">
+        <div class="sl">Session Grind</div>
+        <div style="text-align:center;">
+          <span class="grind-time" id="timer">00:00:00</span>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px;">session</div>
+          <div class="prog-bar" style="margin-top:6px;height:4px;"><div class="prog-fill" id="goal-fill" style="width:0%;background:var(--quiz);"></div></div>
+          <div style="font-size:9px;color:var(--muted);text-align:right;margin-top:2px;" id="goal-txt">0h / 6h</div>
+          <button class="grind-btn" id="timer-btn" onclick="toggleTimer()">START</button>
+        </div>
+      </div>
+      <div class="ss">
+        <div class="sl">Stats</div>
+        <div class="stat-grid">
+          <div class="stat-box"><span class="stat-num" id="s-read">0</span><span class="stat-lbl">Read</span></div>
+          <div class="stat-box"><span class="stat-num" id="s-words">0</span><span class="stat-lbl">Mastered</span></div>
+          <div class="stat-box"><span class="stat-num" id="s-streak">0</span><span class="stat-lbl">Streak</span></div>
+          <div class="stat-box"><span class="stat-num" id="s-nodes">0</span><span class="stat-lbl">Nodes</span></div>
+        </div>
+      </div>
+      <div class="ss">
+        <div class="sl">Lang Balance</div>
+        <div id="lang-bal"></div>
+      </div>
+      <div class="ss">
+        <div class="sl">Topics</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;" id="topic-btns"></div>
+      </div>
+      <div class="ss">
+        <div class="sl">Bias Distribution</div>
+        <div id="bias-dist" style="font-size:10px;"></div>
+      </div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <!-- FEED -->
+      <div class="page active" id="page-feed">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <input class="search-input" type="text" placeholder="Search articles..." id="search" oninput="renderFeed()">
+          <button class="btn btn-y" onclick="renderFeed()">↻</button>
+          <button class="btn" id="hide-btn" onclick="toggleHide()">Hide Read</button>
+        </div>
+        <div class="sh"><span class="st" id="feed-lbl">All Articles</span><span style="font-size:10px;color:var(--muted);" id="feed-ct"></span></div>
+        <div class="articles-grid" id="feed-grid"></div>
+      </div>
+
+      <!-- LANGUAGES -->
+      <div class="page" id="page-langs">
+        <div class="sh"><span class="st">Articles by Language</span></div>
+        <div id="lang-sections"></div>
+      </div>
+
+      <!-- DATA MINE -->
+      <div class="page" id="page-mine">
+        <div class="sh"><span class="st">Data Mine — Live Fetcher</span></div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="color:var(--green);font-size:13px;font-weight:700;margin-bottom:2px;" id="mine-status">Ready</div>
+            <div style="font-size:10px;color:var(--muted);">Wikipedia (8 langs) · arXiv (math/physics/chem) · PubMed (surgery)</div>
           </div>
-          <div class="goal-text" id="goal-text">0 / 6h goal</div>
+          <button class="btn btn-g" id="mine-btn" onclick="startMining()" style="padding:7px 18px;font-size:12px;">⚡ MINE NOW</button>
         </div>
-        <button class="grind-btn" id="timer-btn" onclick="toggleTimer()">START SESSION</button>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Progress</div>
-      <div class="stat-grid">
-        <div class="stat-box">
-          <span class="stat-num" id="stat-read">0</span>
-          <span class="stat-lbl">Articles Read</span>
+        <div class="sl" style="margin-bottom:6px;">Sources</div>
+        <div class="chips" id="src-chips">
+          <button class="chip active" onclick="toggleSrc('wikipedia',this)">Wikipedia</button>
+          <button class="chip active" onclick="toggleSrc('arxiv',this)">arXiv</button>
+          <button class="chip active" onclick="toggleSrc('pubmed',this)">PubMed</button>
         </div>
-        <div class="stat-box">
-          <span class="stat-num" id="stat-words">0</span>
-          <span class="stat-lbl">Words Learned</span>
+        <div class="sl" style="margin-bottom:6px;">Topics to Mine</div>
+        <div class="chips" id="mine-chips">
+          <button class="chip active" onclick="toggleMT('mathematics',this)">Mathematics</button>
+          <button class="chip active" onclick="toggleMT('physics',this)">Physics</button>
+          <button class="chip active" onclick="toggleMT('chemistry',this)">Organic Chemistry</button>
+          <button class="chip active" onclick="toggleMT('neurosurgery',this)">Neurosurgery</button>
+          <button class="chip active" onclick="toggleMT('surgery',this)">General Surgery</button>
+          <button class="chip active" onclick="toggleMT('linguistics',this)">Linguistics</button>
+          <button class="chip active" onclick="toggleMT('walking',this)">Walking/Fitness</button>
+          <button class="chip active" onclick="toggleMT('cognitive',this)">Cognitive Science</button>
         </div>
-        <div class="stat-box">
-          <span class="stat-num" id="stat-streak">0</span>
-          <span class="stat-lbl">Quiz Streak</span>
+        <div class="mine-log" id="mine-log" style="margin-bottom:14px;"><span style="color:var(--muted)">Mining log...</span></div>
+        <div class="sh"><span class="st">Recently Mined</span><span style="font-size:10px;color:var(--muted);" id="mined-ct">0</span></div>
+        <div class="articles-grid" id="mined-grid"></div>
+      </div>
+
+      <!-- CCE-G -->
+      <div class="page" id="page-cce">
+        <div class="sh"><span class="st">CCE-G — Cognitive Compression Engine</span></div>
+
+        <!-- LaTeX Research Paper Generator -->
+        <div style="background:var(--bg2);border:1px solid var(--purple);border-radius:var(--rl);padding:16px;margin-bottom:16px;">
+          <div class="sl" style="color:var(--purple);">LaTeX Research Paper → AI Idea Generator</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:10px;">Paste your LaTeX code. AI generates related research paper ideas in LaTeX format, including abstracts, methods, and references based on your work and data-mined papers.</div>
+          <textarea class="latex-input" id="latex-in" placeholder="\documentclass{article}&#10;\begin{document}&#10;&#10;\title{Your Research Title}&#10;\author{Andre}&#10;&#10;\begin{abstract}&#10;Paste your abstract here...&#10;\end{abstract}&#10;&#10;\section{Introduction}&#10;Your introduction...&#10;&#10;\end{document}"></textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button class="btn btn-b" onclick="generateIdeas()" id="gen-btn" style="padding:7px 16px;">🧠 Generate Paper Ideas</button>
+            <button class="btn btn-y" onclick="compressToNode()" style="padding:7px 16px;">⬡ Add to Knowledge Graph</button>
+            <button class="btn" onclick="document.getElementById('latex-in').value=''">Clear</button>
+          </div>
+          <div class="ai-status" id="ai-status" style="margin-top:10px;display:none;"><span class="spinner"></span>Analyzing your paper and mining related research...</div>
         </div>
-        <div class="stat-box">
-          <span class="stat-num" id="stat-days">1</span>
-          <span class="stat-lbl">Day Streak</span>
+
+        <!-- AI Output -->
+        <div id="ideas-output" style="margin-bottom:16px;display:none;">
+          <div class="sh"><span class="st" style="color:var(--blue);">Generated Research Ideas</span><button class="btn" onclick="copyIdeas()">Copy All LaTeX</button></div>
+          <div id="ideas-list"></div>
         </div>
-      </div>
-    </div>
 
-    <div class="sidebar-section">
-      <div class="sidebar-label">Language Balance</div>
-      <div class="progress-lang">
-        <div class="progress-lang-header"><span style="color:var(--accent-en)">English</span><span id="prog-en-n" style="color:var(--muted)">0 articles</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="prog-en" style="background:var(--accent-en);width:0%"></div></div>
-      </div>
-      <div class="progress-lang">
-        <div class="progress-lang-header"><span style="color:var(--accent-es)">Español</span><span id="prog-es-n" style="color:var(--muted)">0 articles</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="prog-es" style="background:var(--accent-es);width:0%"></div></div>
-      </div>
-      <div class="progress-lang">
-        <div class="progress-lang-header"><span style="color:var(--accent-ru)">Русский</span><span id="prog-ru-n" style="color:var(--muted)">0 articles</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="prog-ru" style="background:var(--accent-ru);width:0%"></div></div>
-      </div>
-      <div class="progress-lang">
-        <div class="progress-lang-header"><span style="color:var(--accent-ar)">العربية</span><span id="prog-ar-n" style="color:var(--muted)">0 articles</span></div>
-        <div class="progress-bar"><div class="progress-fill" id="prog-ar" style="background:var(--accent-ar);width:0%"></div></div>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Topics</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;" id="topic-filters"></div>
-    </div>
-  </aside>
-
-  <!-- CONTENT AREA -->
-  <main class="content">
-
-    <!-- FEED PAGE -->
-    <div class="page active" id="page-feed">
-      <div class="search-bar">
-        <input class="search-input" type="text" placeholder="Search articles, topics, keywords..." id="search-input" oninput="filterArticles()">
-        <button class="btn-sm btn-primary" onclick="refreshFeed()">↻ REFRESH</button>
-      </div>
-      <div class="section-header">
-        <span class="section-title" id="feed-label">Recommended for You</span>
-        <span class="btn-sm" onclick="toggleHideRead()" id="hide-read-btn">Hide Read</span>
-      </div>
-      <div class="articles-grid" id="articles-grid"></div>
-    </div>
-
-    <!-- VOCAB PAGE -->
-    <div class="page" id="page-vocab">
-      <div class="section-header">
-        <span class="section-title">Your Vocabulary Bank</span>
-        <span style="font-size:11px;color:var(--muted)">Top 80% frequency words from your articles</span>
-      </div>
-      <div class="filter-chips" id="vocab-lang-filters">
-        <button class="filter-chip active" onclick="filterVocab('all', this)">All Languages</button>
-        <button class="filter-chip" onclick="filterVocab('en', this)">English</button>
-        <button class="filter-chip" onclick="filterVocab('es', this)">Español</button>
-        <button class="filter-chip" onclick="filterVocab('ru', this)">Русский</button>
-        <button class="filter-chip" onclick="filterVocab('ar', this)">العربية</button>
-      </div>
-      <div class="vocab-panel">
-        <div class="vocab-header">
-          <span class="vocab-title">Word Bank</span>
-          <button class="btn-sm btn-primary" onclick="showPage('quiz')">Quiz Me ↗</button>
-        </div>
-        <table class="vocab-table">
-          <thead>
-            <tr>
-              <th>Word</th>
-              <th>Language</th>
-              <th>Translation</th>
-              <th>Source Article</th>
-              <th>Mastery</th>
-            </tr>
-          </thead>
-          <tbody id="vocab-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- QUIZ PAGE -->
-    <div class="page" id="page-quiz">
-      <div class="quiz-container">
-        <div class="quiz-streak">
-          <div class="streak-item"><span class="streak-num" id="q-streak" style="color:var(--accent-quiz)">0</span><span class="streak-lbl">Streak</span></div>
-          <div class="streak-item"><span class="streak-num" id="q-correct" style="color:var(--accent-ar)">0</span><span class="streak-lbl">Correct</span></div>
-          <div class="streak-item"><span class="streak-num" id="q-total" style="color:var(--muted)">0</span><span class="streak-lbl">Total</span></div>
-          <div class="streak-item"><span class="streak-num" id="q-pct" style="color:var(--accent-ru)">—</span><span class="streak-lbl">Accuracy</span></div>
-        </div>
-        <div class="quiz-card" id="quiz-card">
-          <div class="quiz-lang-label" id="q-lang-label"></div>
-          <div class="quiz-word" id="q-word"></div>
-          <div class="quiz-context" id="q-context"></div>
-          <div class="quiz-options" id="q-options"></div>
-          <div class="quiz-feedback" id="q-feedback"></div>
-          <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
-            <button class="quiz-skip" onclick="nextQuiz()">Skip →</button>
-            <button class="quiz-skip" onclick="showPage('vocab')">View vocab bank</button>
+        <!-- Knowledge Graph -->
+        <div class="sh"><span class="st" style="color:var(--purple);">Knowledge Graph</span><button class="btn btn-b" onclick="showAddNode()">+ Add Node</button></div>
+        <div id="add-node-form" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+            <input class="search-input" id="nn-name" placeholder="Concept name" style="width:100%;">
+            <input class="search-input" id="nn-field" placeholder="Field (e.g. mathematics)" style="width:100%;">
+          </div>
+          <textarea class="latex-input" id="nn-def" style="min-height:70px;" placeholder="Definition / description of this concept..."></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button class="btn btn-b" onclick="addNode()">Add Node</button>
+            <button class="btn" onclick="document.getElementById('add-node-form').style.display='none'">Cancel</button>
           </div>
         </div>
-        <div style="margin-top:16px;text-align:center;">
-          <div class="filter-chips" style="justify-content:center;" id="quiz-lang-filter">
-            <button class="filter-chip active" onclick="setQuizLang('all',this)">All langs</button>
-            <button class="filter-chip" onclick="setQuizLang('en',this)">EN</button>
-            <button class="filter-chip" onclick="setQuizLang('es',this)">ES</button>
-            <button class="filter-chip" onclick="setQuizLang('ru',this)">RU</button>
-            <button class="filter-chip" onclick="setQuizLang('ar',this)">AR</button>
+        <div class="node-grid" id="node-grid"></div>
+        <div class="empty" id="node-empty">No knowledge nodes yet. Add concepts from your research or generate ideas above.</div>
+      </div>
+
+      <!-- VOCAB -->
+      <div class="page" id="page-vocab">
+        <div class="sh"><span class="st">Vocabulary Bank</span><button class="btn btn-y" onclick="showPage('quiz')">Quiz Me ↗</button></div>
+        <div class="chips" id="vocab-chips">
+          <button class="chip active" onclick="fVocab('all',this)">All</button>
+          <button class="chip" onclick="fVocab('en',this)">EN</button>
+          <button class="chip" onclick="fVocab('es',this)">ES</button>
+          <button class="chip" onclick="fVocab('ru',this)">RU</button>
+          <button class="chip" onclick="fVocab('ar',this)">AR</button>
+          <button class="chip" onclick="fVocab('de',this)">DE</button>
+          <button class="chip" onclick="fVocab('ja',this)">JA</button>
+          <button class="chip" onclick="fVocab('zh',this)">ZH</button>
+          <button class="chip" onclick="fVocab('sa',this)">SA</button>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+          <div style="padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;">Word Bank</span>
+            <span style="font-size:10px;color:var(--muted);" id="vocab-ct"></span>
           </div>
+          <table class="vtable"><thead><tr><th>Word</th><th>Lang</th><th>Meaning</th><th>Source</th><th>Mastery</th></tr></thead><tbody id="vtbody"></tbody></table>
         </div>
       </div>
-    </div>
 
-    <!-- ALPHABET PAGE -->
-    <div class="page" id="page-alphabet">
-      <div class="section-header" style="margin-bottom:8px;">
-        <span class="section-title">Alphabet Drills</span>
-      </div>
-      <div class="filter-chips" id="alpha-lang-filter">
-        <button class="filter-chip active" onclick="showAlphabet('ru',this)">Русский (Cyrillic)</button>
-        <button class="filter-chip" onclick="showAlphabet('ar',this)">العربية (Arabic)</button>
-      </div>
-      <div id="alpha-content"></div>
-      <div class="divider"></div>
-      <div class="quiz-container" style="max-width:560px;">
-        <div class="section-header"><span class="section-title">Alphabet Quiz</span></div>
-        <div class="quiz-card" id="alpha-quiz-card">
-          <div class="quiz-lang-label" id="aq-lang"></div>
-          <div class="quiz-word" id="aq-char" style="font-size:72px;"></div>
-          <div class="quiz-context" id="aq-hint">What is the romanization of this character?</div>
-          <div class="quiz-options" id="aq-options"></div>
-          <div class="quiz-feedback" id="aq-feedback"></div>
+      <!-- QUIZ -->
+      <div class="page" id="page-quiz">
+        <div style="max-width:580px;margin:0 auto;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:18px;">
+            <div style="text-align:center;"><span style="font-size:21px;font-weight:700;display:block;color:var(--quiz);" id="q-streak">0</span><span style="font-size:9px;color:var(--muted);text-transform:uppercase;">Streak</span></div>
+            <div style="text-align:center;"><span style="font-size:21px;font-weight:700;display:block;color:var(--green);" id="q-cor">0</span><span style="font-size:9px;color:var(--muted);text-transform:uppercase;">Correct</span></div>
+            <div style="text-align:center;"><span style="font-size:21px;font-weight:700;display:block;color:var(--muted);" id="q-tot">0</span><span style="font-size:9px;color:var(--muted);text-transform:uppercase;">Total</span></div>
+            <div style="text-align:center;"><span style="font-size:21px;font-weight:700;display:block;color:var(--ru);" id="q-pct">—</span><span style="font-size:9px;color:var(--muted);text-transform:uppercase;">Accuracy</span></div>
+          </div>
+          <div class="qcard">
+            <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);" id="q-lang"></div>
+            <div class="qword" id="q-word"></div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;font-family:var(--serif);" id="q-ctx"></div>
+            <div class="qopts" id="q-opts"></div>
+            <div class="qfb" id="q-fb"></div>
+            <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;">
+              <button style="background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;" onclick="nextQ()">Skip →</button>
+              <button style="background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;" onclick="showPage('vocab')">Bank</button>
+            </div>
+          </div>
           <div style="margin-top:12px;text-align:center;">
-            <button class="quiz-skip" onclick="nextAlphaQuiz()">Skip →</button>
+            <div class="chips" style="justify-content:center;" id="ql-chips">
+              <button class="chip active" onclick="setQL('all',this)">All</button>
+              <button class="chip" onclick="setQL('en',this)">EN</button>
+              <button class="chip" onclick="setQL('es',this)">ES</button>
+              <button class="chip" onclick="setQL('ru',this)">RU</button>
+              <button class="chip" onclick="setQL('ar',this)">AR</button>
+              <button class="chip" onclick="setQL('de',this)">DE</button>
+              <button class="chip" onclick="setQL('ja',this)">JA</button>
+              <button class="chip" onclick="setQL('zh',this)">ZH</button>
+              <button class="chip" onclick="setQL('sa',this)">SA</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- SAVED PAGE -->
-    <div class="page" id="page-saved">
-      <div class="section-header">
-        <span class="section-title">Saved & Read Articles</span>
+      <!-- SCRIPTS / ALPHABETS -->
+      <div class="page" id="page-alpha">
+        <div class="sh"><span class="st">Script Drills</span></div>
+        <div class="chips" id="alpha-chips">
+          <button class="chip active" onclick="showAlpha('ru',this)">🇷🇺 Cyrillic</button>
+          <button class="chip" onclick="showAlpha('ar',this)">🇸🇦 Arabic</button>
+          <button class="chip" onclick="showAlpha('ja-hira',this)">🇯🇵 Hiragana</button>
+          <button class="chip" onclick="showAlpha('ja-kata',this)">🇯🇵 Katakana</button>
+          <button class="chip" onclick="showAlpha('zh',this)">🇨🇳 Chinese Radicals</button>
+          <button class="chip" onclick="showAlpha('sa',this)">🇮🇳 Devanagari</button>
+          <button class="chip" onclick="showAlpha('de',this)">🇩🇪 German Special</button>
+        </div>
+        <div id="alpha-content" style="margin-bottom:16px;"></div>
+        <div class="divider"></div>
+        <div style="max-width:500px;">
+          <div class="sh"><span class="st">Script Quiz</span></div>
+          <div class="qcard">
+            <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);" id="aq-lang"></div>
+            <div class="qword" id="aq-char" style="font-size:60px;"></div>
+            <div style="font-size:11px;color:var(--muted);font-style:italic;" id="aq-hint">Romanization / reading?</div>
+            <div class="qopts" id="aq-opts"></div>
+            <div class="qfb" id="aq-fb"></div>
+            <div style="margin-top:10px;text-align:center;"><button style="background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;" onclick="nextAQ()">Skip →</button></div>
+          </div>
+        </div>
       </div>
-      <div class="articles-grid" id="saved-grid"></div>
-    </div>
 
-  </main>
+      <!-- SAVED -->
+      <div class="page" id="page-saved">
+        <div class="sh"><span class="st">Saved & Read</span></div>
+        <div class="articles-grid" id="saved-grid"></div>
+      </div>
+
+    </main>
+  </div>
 </div>
 
-<!-- ARTICLE READER OVERLAY -->
-<div class="reader-overlay" id="reader-overlay" onclick="closeReader(event)">
-  <div class="reader-panel" onclick="event.stopPropagation()">
-    <div class="reader-topbar">
-      <div id="reader-meta-top" style="font-size:11px;color:var(--muted);display:flex;gap:12px;align-items:center;"></div>
-      <div style="display:flex;gap:8px;">
-        <button class="reader-close" id="btn-mark-read" onclick="markCurrentRead()">✓ Mark Read</button>
-        <button class="reader-close" id="btn-save" onclick="saveCurrentArticle()">☆ Save</button>
-        <button class="reader-close" onclick="closeReaderPanel()">✕ Close</button>
+<!-- READER -->
+<div class="rover" id="rover" onclick="closeR(event)">
+  <div class="rpanel" onclick="event.stopPropagation()">
+    <div class="rtop">
+      <div id="rmeta-top" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <button class="rcls" id="btn-read" onclick="markRead()">✓ Mark Read</button>
+        <button class="rcls" id="btn-save" onclick="saveArt()">☆ Save</button>
+        <button class="rcls" onclick="closeRP()">✕</button>
       </div>
     </div>
-    <div class="reader-body">
-      <div class="reader-title" id="reader-title"></div>
-      <div class="reader-meta" id="reader-meta"></div>
-      <div class="reader-text" id="reader-text"></div>
-      <div class="reader-vocab" id="reader-vocab-section">
-        <div class="sidebar-label">Key Vocabulary from this Article</div>
-        <div class="vocab-chips" id="reader-vocab-chips"></div>
+    <div class="rbody">
+      <div class="bias-bar" id="rbias" style="display:none;">
+        <span style="font-size:9px;color:var(--muted);text-transform:uppercase;white-space:nowrap;">Political Lean</span>
+        <div class="bias-scale"><div class="bias-mk" id="bias-mk"></div></div>
+        <span style="font-size:9px;font-weight:700;" id="bias-lbl"></span>
+      </div>
+      <div class="rtitle" id="rtitle"></div>
+      <div class="rmeta" id="rmeta"></div>
+      <div class="rtext" id="rtext"></div>
+      <div id="rvocab" style="margin-top:24px;border-top:1px solid var(--border);padding-top:16px;">
+        <div class="sl">Key Vocabulary</div>
+        <div class="vchips" id="vchips"></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ===== DATA =====
-const TOPICS = ['mathematics','physics','organic chemistry','neurosurgery','general surgery','linguistics','walking / fitness','cognitive science'];
+// ===== AUTH =====
+const _U=atob('YW5kcmU='),_P=atob('MjEwMjA4NjE5OTgxMDA2');
+function doLogin(){
+  const u=document.getElementById('l-user').value;
+  const p=document.getElementById('l-pass').value;
+  if(u===_U&&p===_P){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    sessionStorage.setItem('pg_auth','1');
+    init();
+  } else {
+    const err=document.getElementById('login-err');
+    err.style.display='block';
+    setTimeout(()=>err.style.display='none',2000);
+  }
+}
+function doLogout(){
+  sessionStorage.removeItem('pg_auth');
+  location.reload();
+}
+if(sessionStorage.getItem('pg_auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.addEventListener('DOMContentLoaded',init);
+}
 
-const ARTICLES = [
-  // ENGLISH
-  {id:'en1',lang:'en',topic:'neurosurgery',title:'The Blood-Brain Barrier: Surgical Implications in Glioblastoma Resection',snippet:'The blood-brain barrier presents a fundamental challenge in glioblastoma surgery. Recent intraoperative techniques using 5-ALA fluorescence have dramatically improved gross total resection rates while preserving eloquent cortex.',text:`<p>The blood-brain barrier (BBB) represents one of the most formidable obstacles in neurosurgical oncology. Composed of specialized endothelial cells with tight junctions, astrocytic endfeet, and pericytes, this dynamic interface regulates cerebral homeostasis while simultaneously preventing effective drug penetration to neoplastic tissue.</p><p>In glioblastoma multiforme (GBM), the BBB is paradoxically both intact in tumor-infiltrated peritumoral regions and disrupted within the necrotic core. Surgeons exploiting 5-aminolevulinic acid (5-ALA) fluorescence can visualize tumor margins that appear grossly normal under white light. The porphyrin metabolite accumulates preferentially in malignant glioma cells, producing a distinctive pink-magenta fluorescence under blue light excitation (375-440 nm).</p><p>Recent randomized controlled trials demonstrate that fluorescence-guided surgery achieves gross total resection in 65% of cases versus 36% in white-light surgery, translating to a 3.4-month improvement in progression-free survival. The technique requires intraoperative microscope modification and a 20 mg/kg oral dose administered 3-4 hours preoperatively.</p><p>Eloquent cortex preservation demands integration of awake craniotomy protocols, direct cortical stimulation mapping, and diffusion tensor imaging tractography to visualize the corticospinal and arcuate fasciculus tracts. Intraoperative ultrasound provides real-time feedback on resection cavity geometry.</p>`,vocab:[{w:'resection',t:'surgical removal of tissue'},{w:'eloquent cortex',t:'brain regions controlling speech/movement'},{w:'glioblastoma',t:'aggressive malignant brain tumor'},{w:'porphyrin',t:'organic ring compound accumulating in tumors'},{w:'tractography',t:'3D mapping of neural fiber tracts'}],readTime:'8 min',source:'Journal of Neurosurgery'},
-  {id:'en2',lang:'en',topic:'physics',title:'Topological Insulators and the Quantum Anomalous Hall Effect',snippet:'Topological insulators represent a new state of quantum matter with conducting surface states protected by time-reversal symmetry, enabling dissipationless edge currents relevant to future quantum computing architectures.',text:`<p>Topological insulators constitute a fundamentally novel phase of quantum matter, distinct from conventional band insulators and conductors. The bulk electronic structure is gapped at the Fermi level, yet topologically protected surface states traverse this bulk gap, creating metallic boundary modes that are robust against perturbations that preserve time-reversal symmetry.</p><p>The Berry curvature of Bloch wavefunctions across the Brillouin zone determines the topological invariant (Z₂ index). Materials with non-trivial Z₂ topology exhibit surface Dirac cones — linearly dispersing bands with spin-momentum locking — where electrons traveling in opposite directions carry opposite spins, suppressing backscattering from non-magnetic impurities.</p><p>Introducing magnetic doping (Cr, V, or Mn) into Bi₂Se₃ or (Bi,Sb)₂Te₃ breaks time-reversal symmetry and gaps the surface Dirac cone, driving the system into the quantum anomalous Hall (QAH) phase. This produces a quantized Hall conductance of e²/h without an external magnetic field at millikelvin temperatures.</p><p>The QAH effect enables chiral edge modes — unidirectional, backscattering-free conducting channels analogous to quantum Hall edge states. Proposed applications include dissipationless interconnects in quantum processors and topological quantum computation using Majorana zero modes bound to magnetic defects on the surface.</p>`,vocab:[{w:'topological invariant',t:'quantity unchanged under continuous deformation'},{w:'Berry curvature',t:'geometric phase in momentum space'},{w:'Brillouin zone',t:'primitive cell in reciprocal lattice'},{w:'Dirac cone',t:'linear band crossing point in k-space'},{w:'dissipationless',t:'without energy loss to heat'}],readTime:'10 min',source:'Physical Review Letters'},
-  {id:'en3',lang:'en',topic:'organic chemistry',title:'Asymmetric Organocatalysis: Proline-Mediated Aldol Reactions',snippet:'The L-proline catalyzed aldol reaction achieves high enantioselectivity through an enamine mechanism, producing β-hydroxy carbonyl compounds with predictable absolute configuration — a cornerstone of modern asymmetric synthesis.',text:`<p>The L-proline catalyzed aldol reaction, reported by List, Barbas, and Lerner in 2000, marked a paradigm shift in asymmetric synthesis by demonstrating that small organic molecules could replicate the enantioselective capabilities of aldolase enzymes without metal cofactors.</p><p>The catalytic cycle proceeds through enamine formation: proline's secondary amine condenses with a donor ketone (typically acetone or cyclohexanone) to form a nucleophilic enamine intermediate. The pyrrolidine nitrogen activates the α-carbon via the HOMO-raising mechanism, while the carboxylic acid simultaneously organizes the transition state through a network of hydrogen bonds.</p><p>In the Houk-List transition state model, the enamine adopts an (E)-configuration, and the carboxylate proton bridges the acceptor aldehyde carbonyl oxygen. Re-face attack on the aldehyde yields the (R)-configured product with ee values typically exceeding 90% in DMSO solvent systems. Si-face approach is disfavored by steric clash with the pyrrolidine ring.</p><p>Substrate scope limitations include slow reaction rates with aliphatic aldehydes and poor selectivity with α-branched donors. Second-generation organocatalysts — Jørgensen-Hayashi TMS-prolinol ethers — address these limitations through a steric shielding mechanism, extending the methodology to α,β-unsaturated aldehydes and achieving ee values >99%.</p>`,vocab:[{w:'enantioselectivity',t:'preference for forming one mirror-image product'},{w:'enamine',t:'amine-alkene intermediate in organocatalysis'},{w:'aldol',t:'reaction joining carbonyl-containing molecules'},{w:'ee (enantiomeric excess)',t:'measure of stereochemical purity'},{w:'pyrrolidine',t:'5-membered nitrogen-containing ring'}],readTime:'9 min',source:'JACS'},
-  {id:'en4',lang:'en',topic:'mathematics',title:'The Birch and Swinnerton-Dyer Conjecture: Rank, L-Functions, and Elliptic Curves',snippet:'One of the seven Millennium Prize Problems, the BSD conjecture proposes a deep relationship between the arithmetic of elliptic curves and the behavior of their associated L-functions at s=1.',text:`<p>An elliptic curve E over ℚ is a smooth projective cubic curve admitting a rational point O serving as the identity of its group law. The Mordell-Weil theorem guarantees that E(ℚ) ≅ E(ℚ)_tors ⊕ ℤʳ, where the rank r measures the number of independent generators of infinite order.</p><p>The Birch and Swinnerton-Dyer conjecture, formulated through extensive numerical computation in the 1960s, posits that ord_{s=1} L(E,s) = r. The L-function L(E,s) encodes arithmetic data via its Euler product over primes, with the order of vanishing at s=1 predicted to equal the Mordell-Weil rank — a profound bridge between analytic and algebraic structure.</p><p>The BSD conjecture has been verified computationally for millions of curves and proven for rank 0 and rank 1 curves under additional hypotheses (Kolyvagin's Euler system, Gross-Zagier theorem). For higher ranks, no complete proof exists, qualifying it as a Millennium Prize Problem with a $1,000,000 reward.</p><p>The weak BSD predicts only the order of vanishing; the strong form additionally specifies the leading coefficient in terms of the period lattice, Tamagawa numbers, Shafarevich-Tate group order, and regulator — a precise formula involving virtually every major invariant of the curve.</p>`,vocab:[{w:'elliptic curve',t:'smooth cubic curve with a group law'},{w:'Mordell-Weil rank',t:'number of independent rational points'},{w:'L-function',t:'analytic function encoding arithmetic data'},{w:'Euler system',t:'system of cohomology classes used in proofs'},{w:'Tamagawa number',t:'local arithmetic invariant at each prime'}],readTime:'12 min',source:'Annals of Mathematics'},
-  {id:'en5',lang:'en',topic:'general surgery',title:'Laparoscopic Roux-en-Y Gastric Bypass: Technique Refinements and Metabolic Outcomes',snippet:'Modern laparoscopic RYGB achieves durable weight loss through both restrictive and metabolic mechanisms, with GLP-1 axis augmentation increasingly recognized as the primary driver of type 2 diabetes remission.',text:`<p>The Roux-en-Y gastric bypass (RYGB) remains the gold standard bariatric procedure, combining a small gastric pouch (~30mL) with intestinal bypass to achieve both restriction and altered nutrient flow. The alimentary limb (typically 150cm) carries nutrients distally before meeting the biliopancreatic limb at the jejunojejunostomy, creating the common channel where digestion and absorption occur.</p><p>Contemporary technique employs a linear stapler to create the gastrojejunostomy in antecolic, antegastric orientation, reducing internal hernia risk compared to retrocolic configurations. The mesenteric defects at Petersen's space and the jejunojejunostomy mesentery must be closed with non-absorbable suture to minimize the 3-5% lifetime internal hernia risk.</p><p>Metabolic outcomes extend far beyond weight loss. GLP-1 secretion from L-cells in the distal ileum is dramatically augmented post-RYGB due to accelerated nutrient delivery, producing enhanced insulin secretion, suppressed glucagon, and central satiety signaling. Type 2 diabetes remission occurs in 70-80% of patients, often preceding significant weight loss.</p><p>Nutritional monitoring requires lifelong supplementation: iron (particularly in premenopausal women), vitamin B12 (intrinsic factor bypass), calcium citrate (preferred over carbonate due to reduced acid environment), and vitamin D. Annual DEXA scans monitor bone density, which decrements 8-10% over the first two postoperative years.</p>`,vocab:[{w:'Roux-en-Y',t:'surgical Y-shaped intestinal configuration'},{w:'biliopancreatic limb',t:'segment carrying bile and pancreatic enzymes'},{w:'jejunojejunostomy',t:'surgical join between two jejunum segments'},{w:'GLP-1',t:'gut hormone augmenting insulin secretion'},{w:'DEXA scan',t:'bone density imaging technique'}],readTime:'9 min',source:'Annals of Surgery'},
+// ===== ALPHABETS =====
+const ALPHA={
+  ru:[{c:'А',r:'A'},{c:'Б',r:'B'},{c:'В',r:'V'},{c:'Г',r:'G'},{c:'Д',r:'D'},{c:'Е',r:'YE'},{c:'Ё',r:'YO'},{c:'Ж',r:'ZH'},{c:'З',r:'Z'},{c:'И',r:'I'},{c:'Й',r:'Y'},{c:'К',r:'K'},{c:'Л',r:'L'},{c:'М',r:'M'},{c:'Н',r:'N'},{c:'О',r:'O'},{c:'П',r:'P'},{c:'Р',r:'R'},{c:'С',r:'S'},{c:'Т',r:'T'},{c:'У',r:'U'},{c:'Ф',r:'F'},{c:'Х',r:'KH'},{c:'Ц',r:'TS'},{c:'Ч',r:'CH'},{c:'Ш',r:'SH'},{c:'Щ',r:'SHCH'},{c:'Ъ',r:'Hard'},{c:'Ы',r:'Y'},{c:'Ь',r:'Soft'},{c:'Э',r:'E'},{c:'Ю',r:'YU'},{c:'Я',r:'YA'}],
+  ar:[{c:'ا',r:'Alif(A)'},{c:'ب',r:'Ba(B)'},{c:'ت',r:'Ta(T)'},{c:'ث',r:'Tha'},{c:'ج',r:'Jim(J)'},{c:'ح',r:'Ha(H)'},{c:'خ',r:'Kha'},{c:'د',r:'Dal(D)'},{c:'ذ',r:'Dhal'},{c:'ر',r:'Ra(R)'},{c:'ز',r:'Zay(Z)'},{c:'س',r:'Sin(S)'},{c:'ش',r:'Shin'},{c:'ص',r:'Sad(S)'},{c:'ض',r:'Dad(D)'},{c:'ط',r:'Ta'},{c:'ظ',r:'Dha'},{c:'ع',r:"Ain"},{c:'غ',r:'Ghain'},{c:'ف',r:'Fa(F)'},{c:'ق',r:'Qaf(Q)'},{c:'ك',r:'Kaf(K)'},{c:'ل',r:'Lam(L)'},{c:'م',r:'Mim(M)'},{c:'ن',r:'Nun(N)'},{c:'ه',r:'Ha(H)'},{c:'و',r:'Waw(W)'},{c:'ي',r:'Ya(Y)'}],
+  'ja-hira':[{c:'あ',r:'a'},{c:'い',r:'i'},{c:'う',r:'u'},{c:'え',r:'e'},{c:'お',r:'o'},{c:'か',r:'ka'},{c:'き',r:'ki'},{c:'く',r:'ku'},{c:'け',r:'ke'},{c:'こ',r:'ko'},{c:'さ',r:'sa'},{c:'し',r:'shi'},{c:'す',r:'su'},{c:'せ',r:'se'},{c:'そ',r:'so'},{c:'た',r:'ta'},{c:'ち',r:'chi'},{c:'つ',r:'tsu'},{c:'て',r:'te'},{c:'と',r:'to'},{c:'な',r:'na'},{c:'に',r:'ni'},{c:'ぬ',r:'nu'},{c:'ね',r:'ne'},{c:'の',r:'no'},{c:'は',r:'ha'},{c:'ひ',r:'hi'},{c:'ふ',r:'fu'},{c:'へ',r:'he'},{c:'ほ',r:'ho'},{c:'ま',r:'ma'},{c:'み',r:'mi'},{c:'む',r:'mu'},{c:'め',r:'me'},{c:'も',r:'mo'},{c:'や',r:'ya'},{c:'ゆ',r:'yu'},{c:'よ',r:'yo'},{c:'ら',r:'ra'},{c:'り',r:'ri'},{c:'る',r:'ru'},{c:'れ',r:'re'},{c:'ろ',r:'ro'},{c:'わ',r:'wa'},{c:'を',r:'wo'},{c:'ん',r:'n'}],
+  'ja-kata':[{c:'ア',r:'a'},{c:'イ',r:'i'},{c:'ウ',r:'u'},{c:'エ',r:'e'},{c:'オ',r:'o'},{c:'カ',r:'ka'},{c:'キ',r:'ki'},{c:'ク',r:'ku'},{c:'ケ',r:'ke'},{c:'コ',r:'ko'},{c:'サ',r:'sa'},{c:'シ',r:'shi'},{c:'ス',r:'su'},{c:'セ',r:'se'},{c:'ソ',r:'so'},{c:'タ',r:'ta'},{c:'チ',r:'chi'},{c:'ツ',r:'tsu'},{c:'テ',r:'te'},{c:'ト',r:'to'},{c:'ナ',r:'na'},{c:'ニ',r:'ni'},{c:'ヌ',r:'nu'},{c:'ネ',r:'ne'},{c:'ノ',r:'no'},{c:'ハ',r:'ha'},{c:'ヒ',r:'hi'},{c:'フ',r:'fu'},{c:'ヘ',r:'he'},{c:'ホ',r:'ho'},{c:'マ',r:'ma'},{c:'ミ',r:'mi'},{c:'ム',r:'mu'},{c:'メ',r:'me'},{c:'モ',r:'mo'},{c:'ヤ',r:'ya'},{c:'ユ',r:'yu'},{c:'ヨ',r:'yo'},{c:'ラ',r:'ra'},{c:'リ',r:'ri'},{c:'ル',r:'ru'},{c:'レ',r:'re'},{c:'ロ',r:'ro'},{c:'ワ',r:'wa'},{c:'ヲ',r:'wo'},{c:'ン',r:'n'}],
+  zh:[{c:'一',r:'yī(one)'},{c:'人',r:'rén(person)'},{c:'大',r:'dà(big)'},{c:'中',r:'zhōng(mid)'},{c:'小',r:'xiǎo(small)'},{c:'日',r:'rì(sun)'},{c:'月',r:'yuè(moon)'},{c:'木',r:'mù(wood)'},{c:'水',r:'shuǐ(water)'},{c:'火',r:'huǒ(fire)'},{c:'土',r:'tǔ(earth)'},{c:'金',r:'jīn(gold)'},{c:'山',r:'shān(mtn)'},{c:'口',r:'kǒu(mouth)'},{c:'手',r:'shǒu(hand)'},{c:'目',r:'mù(eye)'},{c:'心',r:'xīn(heart)'},{c:'力',r:'lì(strength)'},{c:'言',r:'yán(speech)'},{c:'学',r:'xué(study)'},{c:'数',r:'shù(number)'},{c:'科',r:'kē(science)'},{c:'医',r:'yī(medicine)'},{c:'脑',r:'nǎo(brain)'}],
+  sa:[{c:'अ',r:'a'},{c:'आ',r:'ā'},{c:'इ',r:'i'},{c:'ई',r:'ī'},{c:'उ',r:'u'},{c:'ऊ',r:'ū'},{c:'ए',r:'e'},{c:'ओ',r:'o'},{c:'क',r:'ka'},{c:'ख',r:'kha'},{c:'ग',r:'ga'},{c:'घ',r:'gha'},{c:'च',r:'ca'},{c:'छ',r:'cha'},{c:'ज',r:'ja'},{c:'झ',r:'jha'},{c:'ट',r:'ṭa'},{c:'ठ',r:'ṭha'},{c:'ड',r:'ḍa'},{c:'त',r:'ta'},{c:'थ',r:'tha'},{c:'द',r:'da'},{c:'ध',r:'dha'},{c:'न',r:'na'},{c:'प',r:'pa'},{c:'फ',r:'pha'},{c:'ब',r:'ba'},{c:'भ',r:'bha'},{c:'म',r:'ma'},{c:'य',r:'ya'},{c:'र',r:'ra'},{c:'ल',r:'la'},{c:'व',r:'va'},{c:'श',r:'śa'},{c:'स',r:'sa'},{c:'ह',r:'ha'}],
+  de:[{c:'Ä',r:'ä(ae)'},{c:'Ö',r:'ö(oe)'},{c:'Ü',r:'ü(ue)'},{c:'ß',r:'ß(ss)'},{c:'ch',r:'ch(Bach)'},{c:'sch',r:'sch(sh)'},{c:'ei',r:'ei(eye)'},{c:'ie',r:'ie(ee)'},{c:'eu',r:'eu(oy)'},{c:'au',r:'au(ow)'}],
+};
 
-  // ESPAÑOL
-  {id:'es1',lang:'es',topic:'neurosurgery',title:'Craneotomía Despierta: Mapeo Cortical y Preservación del Lenguaje',snippet:'La craneotomía en vigilia con estimulación cortical directa permite la resección de tumores en áreas elocuentes mientras se preserva la función del lenguaje y el movimiento, reduciendo el déficit neurológico postoperatorio.',text:`<p>La craneotomía despierta bajo anestesia local con sedación consciente representa la técnica gold standard para la cirugía de tumores en áreas elocuentes adyacentes a corteza motora, sensitiva o de lenguaje. El protocolo asleep-awake-asleep permite al paciente colaborar durante el mapeo funcional manteniendo la analgesia durante las fases de apertura y cierre.</p><p>El mapeo cortical mediante estimulación eléctrica directa (DES) utiliza corriente bifásica de 60 Hz (1-8 mA) aplicada con electrodos bipolares de 1 mm de separación. La estimulación del área de Broca produce arresto del habla, parafasias, o anomia, mientras que la estimulación de la corteza motora primaria (M1) genera movimientos contralaterales involuntarios identificables clínicamente.</p><p>La tractografía preoperatoria basada en imágenes de tensor de difusión (DTI) identifica el fascículo arcuato, la corona radiada y las fibras del cuerpo calloso. La distancia mínima de seguridad entre el margen de resección y un tracto funcional es de 5-10 mm según los estándares actuales, aunque estudios recientes cuestionan este umbral.</p><p>Los resultados oncológicos demuestran que la cirugía guiada por mapeo funcional logra una extensión de resección significativamente mayor sin incrementar la morbilidad neurológica. La supervivencia global en gliomas de alto grado mejora 4-6 meses con resección máxima segura comparada con biopsia estereotáctica.</p>`,vocab:[{w:'craneotomía',t:'surgical opening of the skull'},{w:'elocuente',t:'eloquent (functionally critical brain area)'},{w:'estimulación cortical',t:'direct electrical brain stimulation'},{w:'fascículo arcuato',t:'arcuate fasciculus (language white matter tract)'},{w:'tractografía',t:'DTI-based fiber tract mapping'}],readTime:'8 min',source:'Revista de Neurología'},
-  {id:'es2',lang:'es',topic:'physics',title:'El Efecto Túnel Cuántico y sus Aplicaciones en la Microscopía de Efecto Túnel',snippet:'El efecto túnel cuántico permite que partículas atraviesen barreras de potencial clásicamente infranqueables. El microscopio de efecto túnel (STM) explota este fenómeno para obtener imágenes de superficies con resolución atómica.',text:`<p>El efecto túnel cuántico emerge directamente de la naturaleza ondulatoria de la materia descrita por la mecánica cuántica. Cuando una partícula de masa m encuentra una barrera de potencial V₀ superior a su energía cinética E, la función de onda ψ no se anula bruscamente sino que decae exponencialmente dentro de la barrera: ψ(x) ∝ e^(-κx), donde κ = √(2m(V₀-E))/ℏ.</p><p>La probabilidad de transmisión T a través de una barrera de anchura d es aproximadamente T ≈ e^(-2κd). Esta dependencia exponencial con la distancia es precisamente lo que explota el microscopio de efecto túnel (STM) inventado por Binnig y Rohrer en 1981, trabajo que les valió el Premio Nobel de Física en 1986.</p><p>En el STM, una punta metálica extremadamente afilada se aproxima a la superficie hasta una distancia de 5-10 Å. Al aplicar un voltaje de polarización (típicamente 10 mV - 2 V), la corriente de efecto túnel resultante es extremadamente sensible a la separación punta-muestra. Un cambio de 1 Å en la distancia produce una variación de un orden de magnitud en la corriente, proporcionando resolución vertical sub-angström.</p>`,vocab:[{w:'efecto túnel',t:'quantum tunneling through potential barriers'},{w:'función de onda',t:'wavefunction describing particle state'},{w:'barrera de potencial',t:'potential energy barrier'},{w:'microscopía de efecto túnel',t:'scanning tunneling microscopy (STM)'},{w:'resolución atómica',t:'atomic-scale imaging resolution'}],readTime:'7 min',source:'Ciencia y Tecnología'},
-  {id:'es3',lang:'es',topic:'organic chemistry',title:'Química de Péptidos: Síntesis en Fase Sólida de Fmoc',snippet:'La síntesis de péptidos en fase sólida mediante la estrategia Fmoc permite la construcción automatizada de secuencias peptídicas complejas con alto rendimiento y pureza, fundamental en el desarrollo de fármacos peptídicos.',text:`<p>La síntesis de péptidos en fase sólida (SPPS) con protección Fmoc, desarrollada por Sheppard en los años 1970, revolucionó la producción de péptidos al permitir la construcción secuencial de cadenas aminoacídicas sobre una resina insoluble. La estrategia Fmoc (9-fluorenilmetoxicarbonilo) emplea protección temporal del grupo amino en condiciones básicas suaves (piperidina al 20% en DMF), compatible con grupos protectores permanentes en cadenas laterales que se eliminan en condiciones ácidas fuertes (TFA).</p><p>El ciclo sintético comprende cuatro pasos: (1) desprotección del Fmoc con piperidina, (2) lavados para eliminar dibenzofuilveno formado, (3) acoplamiento del siguiente aminoácido activado con HATU/DIPEA, y (4) lavados finales. La eficiencia de acoplamiento supera el 99.5% por ciclo usando agentes de acoplamiento modernos, permitiendo sintetizar péptidos de 50-100 residuos con pureza adecuada.</p>`,vocab:[{w:'síntesis en fase sólida',t:'solid-phase peptide synthesis'},{w:'resina',t:'solid support resin in SPPS'},{w:'acoplamiento',t:'coupling reaction forming peptide bond'},{w:'desprotección',t:'removal of protecting group'},{w:'rendimiento',t:'synthetic yield'}],readTime:'7 min',source:'Anales de Química'},
-  {id:'es4',lang:'es',topic:'mathematics',title:'Topología Algebraica: Grupos de Homología y el Teorema de Hurewicz',snippet:'Los grupos de homología de un espacio topológico capturan información sobre sus agujeros de distintas dimensiones. El teorema de Hurewicz conecta los grupos de homotopía con los grupos de homología en ciertos rangos.',text:`<p>La homología singular de un espacio topológico X asigna a cada dimensión n un grupo abeliano Hₙ(X) que cuantifica los "agujeros" n-dimensionales. Los n-ciclos (cadenas sin frontera) que no son fronteras de cadenas (n+1)-dimensionales contribuyen a Hₙ(X) = Zₙ(X)/Bₙ(X).</p><p>El teorema de Hurewicz establece que si X es (n-1)-conexo (πₖ(X) = 0 para k < n), entonces el mapa de Hurewicz h: πₙ(X) → Hₙ(X) es un isomorfismo para k = n y una abelianización para k = n+1. Esta conexión permite calcular grupos de homotopía usando técnicas de homología, que son algorítmicamente más tractables.</p>`,vocab:[{w:'homología',t:'algebraic topology invariant'},{w:'grupo abeliano',t:'commutative group'},{w:'homotopía',t:'continuous deformation between maps'},{w:'isomorfismo',t:'structure-preserving bijection'},{w:'espacio topológico',t:'topological space'}],readTime:'10 min',source:'Matemática Iberoamericana'},
-  {id:'es5',lang:'es',topic:'walking / fitness',title:'La Biomecánica del Paso: Cadencia, Longitud de Zancada y Consumo Energético',snippet:'Caminar 14 km diarios implica una notable demanda biomecánica y metabólica. La optimización de la cadencia y la postura puede reducir el gasto energético hasta un 15% y disminuir el riesgo de lesiones por sobreuso.',text:`<p>La locomoción bípeda humana es mecánicamente eficiente gracias al mecanismo del péndulo invertido: durante la fase de apoyo, el cuerpo oscila sobre la pierna extendida como un péndulo rígido, transfiriendo energía potencial en cinética y viceversa. Esta recuperación de energía alcanza el 65% en la marcha normal, reduciendo significativamente el costo metabólico comparado con otros modos de locomoción.</p><p>La cadencia óptima para minimizar el gasto energético en caminatas de larga distancia oscila entre 100-120 pasos/minuto para adultos de estatura media. Cadencias inferiores aumentan el trabajo muscular por paso; cadencias superiores incrementan la frecuencia cardíaca desproporcionadamente. La longitud de zancada preferida correlaciona linealmente con la longitud de pierna: LZ ≈ 0.42 × altura corporal.</p><p>Para distancias de 14 km diarios, la selección del calzado influye críiticamente. La rigidez torsional del antepié, el índice de amortiguamiento del talón (HHI), y el drop talón-punta (4-8 mm es óptimo para biomecánica natural) determinan la distribución de fuerzas articulares. Superficies mixtas (asfalto/tierra) reducen la fatiga acumulativa comparadas con superficies uniformes.</p>`,vocab:[{w:'cadencia',t:'step rate (steps per minute)'},{w:'zancada',t:'stride (full gait cycle)'},{w:'péndulo invertido',t:'inverted pendulum gait model'},{w:'gasto energético',t:'energy expenditure'},{w:'biomecánica',t:'biomechanics'}],readTime:'6 min',source:'Revista Española de Medicina del Deporte'},
+const BIAS={
+  'Wikipedia':{l:'Neutral',s:.5,c:'bw'},
+  'arXiv':{l:'Academic',s:.5,c:'bac'},
+  'PubMed':{l:'Academic',s:.5,c:'bac'},
+  'BBC':{l:'Lean Left',s:.3,c:'bll'},
+  'Reuters':{l:'Center',s:.5,c:'bc'},
+  'Guardian':{l:'Left',s:.1,c:'bl'},
+  'NYT':{l:'Lean Left',s:.28,c:'bll'},
+  'WSJ':{l:'Lean Right',s:.72,c:'blr'},
+  'Der Spiegel':{l:'Lean Left',s:.3,c:'bll'},
+  'El País':{l:'Lean Left',s:.32,c:'bll'},
+  'NHK':{l:'Center',s:.5,c:'bc'},
+  'Xinhua':{l:'State',s:.9,c:'br'},
+  'Al Jazeera':{l:'Lean Left',s:.3,c:'bll'},
+};
 
-  // RUSSIAN
-  {id:'ru1',lang:'ru',topic:'mathematics',title:'Гипотеза Римана и распределение простых чисел',snippet:'Гипотеза Римана утверждает, что все нетривиальные нули дзета-функции лежат на критической прямой Re(s) = 1/2. Её доказательство имело бы фундаментальные последствия для распределения простых чисел.',text:`<p>Дзета-функция Римана ζ(s) = Σₙ₌₁^∞ n⁻ˢ, первоначально определённая для Re(s) > 1, допускает аналитическое продолжение на всю комплексную плоскость за исключением простого полюса в s = 1. Функциональное уравнение π^(-s/2)Γ(s/2)ζ(s) = π^(-(1-s)/2)Γ((1-s)/2)ζ(1-s) обеспечивает симметрию относительно критической прямой Re(s) = 1/2.</p><p>Гипотеза Римана, сформулированная в 1859 году, утверждает, что все нетривиальные нули ζ(s) имеют вещественную часть, равную 1/2. Тривиальные нули располагаются в отрицательных чётных числах: s = -2, -4, -6, ...</p><p>Связь с простыми числами выражается явной формулой Мангольдта: ψ(x) = x - Σ_ρ x^ρ/ρ - ln(2π) - (1/2)ln(1-x⁻²), где сумма берётся по всем нетривиальным нулям ρ. Если гипотеза Римана верна, функция подсчёта простых чисел π(x) отклоняется от li(x) не более чем на O(√x log x).</p>`,vocab:[{w:'дзета-функция',t:'Riemann zeta function'},{w:'нули',t:'zeros (of a function)'},{w:'аналитическое продолжение',t:'analytic continuation'},{w:'простые числа',t:'prime numbers'},{w:'комплексная плоскость',t:'complex plane'}],readTime:'10 min',source:'Математический сборник'},
-  {id:'ru2',lang:'ru',topic:'neurosurgery',title:'Глубокая стимуляция мозга при болезни Паркинсона',snippet:'Глубокая стимуляция мозга (DBS) субталамического ядра является высокоэффективным нейрохирургическим методом лечения болезни Паркинсона, позволяющим значительно уменьшить двигательные симптомы.',text:`<p>Глубокая стимуляция мозга (ГСМ, DBS) субталамического ядра (СТЯ) стала золотым стандартом хирургического лечения болезни Паркинсона, резистентной к медикаментозной терапии. Высокочастотная стимуляция (130-180 Гц) подавляет патологическую гиперактивность СТЯ, нормализуя активность базальных ганглиев и восстанавливая двигательный контроль.</p><p>Нейрохирургическая процедура выполняется в условиях стереотаксии под местной анестезией. Микроэлектродная запись (МЭЗ) позволяет идентифицировать СТЯ по характерному паттерну разрядов нейронов с высокой частотой 35-45 Гц. Точность имплантации электрода критична: смещение на 1-2 мм приводит к нежелательным побочным эффектам.</p>`,vocab:[{w:'глубокая стимуляция мозга',t:'deep brain stimulation (DBS)'},{w:'субталамическое ядро',t:'subthalamic nucleus'},{w:'стереотаксия',t:'stereotactic neurosurgery'},{w:'базальные ганглии',t:'basal ganglia'},{w:'микроэлектродная запись',t:'microelectrode recording'}],readTime:'8 min',source:'Журнал неврологии'},
-  {id:'ru3',lang:'ru',topic:'physics',title:'Квантовая запутанность и теоремы Белла',snippet:'Квантовая запутанность — нелокальная корреляция между квантовыми системами, нарушающая неравенства Белла. Эксперименты Аспека и последующие тесты с «закрытыми лазейками» подтверждают несовместимость квантовой механики с локальным реализмом.',text:`<p>Квантовая запутанность описывает состояние составной системы, не сводимое к произведению состояний подсистем. Состояние Белла |Φ⁺⟩ = (|00⟩ + |11⟩)/√2 демонстрирует максимальную запутанность: измерение спина одного кубита мгновенно определяет результат измерения другого, независимо от расстояния между ними.</p><p>Теоремы Белла (1964) показывают, что никакая теория скрытых переменных с локальным реализмом не может воспроизвести все предсказания квантовой механики. Параметр CHSH S = |E(a,b) - E(a,b') + E(a',b) + E(a',b')| ≤ 2 для локально-реалистических теорий, но квантовая механика предсказывает S_max = 2√2 ≈ 2.83.</p>`,vocab:[{w:'запутанность',t:'quantum entanglement'},{w:'нелокальность',t:'nonlocality'},{w:'скрытые переменные',t:'hidden variables'},{w:'кубит',t:'quantum bit (qubit)'},{w:'неравенства Белла',t:'Bell inequalities'}],readTime:'9 min',source:'Успехи физических наук'},
-  {id:'ru4',lang:'ru',topic:'organic chemistry',title:'Радикальные реакции в органической химии: инициирование и цепные механизмы',snippet:'Радикальные цепные реакции, включая галогенирование алканов, протекают через стадии инициирования, продолжения и обрыва цепи. Селективность определяется стабильностью промежуточных радикалов.',text:`<p>Свободнорадикальные реакции занимают особое место в органической химии, обеспечивая трансформации, недоступные ионным механизмам. Типичная цепная реакция хлорирования метана состоит из трёх стадий: инициирование (гомолитический разрыв Cl₂ под действием УФ-излучения с образованием хлорных радикалов), продолжение цепи (последовательные реакции Cl• + CH₄ → HCl + CH₃• и CH₃• + Cl₂ → CH₃Cl + Cl•) и обрыв цепи (рекомбинация радикалов).</p><p>Стабильность радикалов увеличивается в ряду: метильный < первичный < вторичный < третичный < аллильный = бензильный. Эта тенденция объясняется гиперконъюгацией (σ-донирование C-H связей) и сопряжением (делокализация неспаренного электрона в аллильных и бензильных системах).</p>`,vocab:[{w:'радикал',t:'free radical (unpaired electron species)'},{w:'инициирование',t:'chain initiation step'},{w:'гомолитический разрыв',t:'homolytic bond cleavage'},{w:'гиперконъюгация',t:'hyperconjugation'},{w:'рекомбинация',t:'radical recombination (chain termination)'}],readTime:'7 min',source:'Журнал органической химии'},
+const LANGS_INFO={
+  en:{name:'English',flag:'🇺🇸',color:'var(--en)'},
+  es:{name:'Español',flag:'🇪🇸',color:'var(--es)'},
+  ru:{name:'Русский',flag:'🇷🇺',color:'var(--ru)'},
+  ar:{name:'العربية',flag:'🇸🇦',color:'var(--ar)'},
+  de:{name:'Deutsch',flag:'🇩🇪',color:'var(--de)'},
+  ja:{name:'日本語',flag:'🇯🇵',color:'var(--ja)'},
+  zh:{name:'中文',flag:'🇨🇳',color:'var(--zh)'},
+  sa:{name:'संस्कृत',flag:'🇮🇳',color:'var(--sa)'},
+};
 
-  // ARABIC
-  {id:'ar1',lang:'ar',topic:'neurosurgery',title:'جراحة الدماغ الجائرة بالحد الأدنى: تقنيات التنظير العصبي',snippet:'التنظير العصبي يتيح الوصول إلى تجاويف الدماغ بشقوق صغيرة، مما يقلل من الصدمة الجراحية ويُسرّع التعافي. تُستخدم هذه التقنية لاستئصال أورام البطين وعلاج استسقاء الدماغ.',text:`<p>التنظير العصبي يمثل ثورة في جراحة الدماغ الحديثة، إذ يتيح للجراح الوصول إلى التجاويف العميقة للدماغ عبر شقوق لا تتجاوز قطرها 5-8 ملم. يُدخَل المنظار العصبي المزود بكاميرا عالية الدقة وقناة عمل عبر ثقب أو كبربور صغير في الجمجمة، محدوداً بالحيز المحيط بمسار الأداة ودون الحاجة إلى الكشف المفتوح.</p><p>أبرز تطبيقات التنظير العصبي: استئصال أورام البطين الثالث والرابع، علاج استسقاء الدماغ بثقب الطابق الثالث (ETV) كبديل لنظام الصرف الخارجي، استئصال الأورام النقيلية الصغيرة العميقة، وتصريف الخراجات والأورام الدموية داخل البطين.</p><p>تقنية ثقب الطابق الثالث بالتنظير (ETV) تُجري فتحة في أرضية البطين الثالث بين أجسام الثدي والغدة النخامية، مما يُعيد تدفق السائل الدماغي الشوكي إلى الفضاء تحت العنكبوتية دون الحاجة لزراعة تحويلة صناعية. نسبة النجاح تصل إلى 85% في استسقاء الدماغ الانسدادي.</p>`,vocab:[{w:'تنظير عصبي',t:'neuroendoscopy'},{w:'بطين الدماغ',t:'brain ventricle'},{w:'استسقاء الدماغ',t:'hydrocephalus'},{w:'السائل الدماغي الشوكي',t:'cerebrospinal fluid (CSF)'},{w:'ثقب الطابق الثالث',t:'third ventriculostomy (ETV)'}],readTime:'8 min',source:'مجلة الجراحة العربية'},
-  {id:'ar2',lang:'ar',topic:'mathematics',title:'نظرية فيثاغورس في الفضاء غير الإقليدي: هندسة ريمان',snippet:'في الهندسة الرياضية لريمان، تُعدَّل نظرية فيثاغورس لتأخذ في الحسبان انحناء الفضاء. هذه الهندسة تشكّل الأساس الرياضي لنظرية النسبية العامة لأينشتاين.',text:`<p>الهندسة الإقليدية التي نألفها تفترض فضاءً مسطحاً تصح فيه نظرية فيثاغورس: c² = a² + b². أما في هندسة ريمان، وهي هندسة منحنية تُعمّم الهندسة الإقليدية، فإن المسافة بين نقطتين متقاربتين تُعطى بالمعادلة التفاضلية: ds² = gᵢⱼ dxⁱ dxʲ، حيث gᵢⱼ هو موتر المترية الذي يصف انحناء الفضاء في كل نقطة.</p><p>على سطح كرة نصف قطرها R، يُكتب موتر المترية بالإحداثيات الكروية (θ, φ) كالتالي: ds² = R²dθ² + R²sin²θ dφ². نلاحظ أن المسافة الزاوية تتناسب مع الجيب sin θ، وهذا ينعكس مباشرةً على انحناء الفضاء الكروي. في هذا الفضاء، مجموع زوايا المثلث يتجاوز 180 درجة.</p>`,vocab:[{w:'هندسة ريمان',t:'Riemannian geometry'},{w:'موتر المترية',t:'metric tensor'},{w:'الانحناء',t:'curvature'},{w:'الفضاء الإقليدي',t:'Euclidean space'},{w:'نظرية فيثاغورس',t:"Pythagorean theorem"}],readTime:'9 min',source:'مجلة الرياضيات'},
-  {id:'ar3',lang:'ar',topic:'physics',title:'الفيزياء النووية: الانشطار والانصهار والطاقة المنبعثة',snippet:'الانشطار النووي لليورانيوم-235 ينتج طاقة هائلة وفق معادلة أينشتاين E=mc². أما الاندماج النووي، القائم على دمج نوى خفيفة، فيمثل الهدف الأسمى للطاقة النظيفة المستقبلية.',text:`<p>الانشطار النووي يحدث حين تمتص نواة ثقيلة كاليورانيوم-235 نيوتروناً بطيئاً، فتنقسم إلى نواتين أخف وعدد من النيوترونات الحرة مع إطلاق طاقة هائلة. معادلة أينشتاين E = mc² تُفسر مصدر هذه الطاقة: الكتلة المفقودة (عجز الكتلة Δm ≈ 0.2 AMU لكل انشطار) تتحول إلى طاقة قدرها ≈ 200 MeV.</p><p>التفاعل المتسلسل الضبوط شرط تشغيل المفاعلات النووية: كل انشطار يُطلق 2-3 نيوترونات، ينبغي أن ينتج منها نيوترون واحد بالضبط انشطاراً جديداً (معامل التضاعف k = 1). معتدلات الطاقة (الماء الثقيل، الجرافيت) تُبطئ النيوترونات لتصبح "حرارية" أكثر قابلية للامتصاص.</p>`,vocab:[{w:'الانشطار النووي',t:'nuclear fission'},{w:'الاندماج النووي',t:'nuclear fusion'},{w:'عجز الكتلة',t:'mass defect'},{w:'التفاعل المتسلسل',t:'chain reaction'},{w:'النيوترون الحراري',t:'thermal neutron'}],readTime:'8 min',source:'مجلة الفيزياء العربية'},
-];
-
-const RUSSIAN_ALPHABET = [
-  {c:'А',r:'A'},{c:'Б',r:'B'},{c:'В',r:'V'},{c:'Г',r:'G'},{c:'Д',r:'D'},{c:'Е',r:'YE'},{c:'Ё',r:'YO'},
-  {c:'Ж',r:'ZH'},{c:'З',r:'Z'},{c:'И',r:'I'},{c:'Й',r:'Y'},{c:'К',r:'K'},{c:'Л',r:'L'},{c:'М',r:'M'},
-  {c:'Н',r:'N'},{c:'О',r:'O'},{c:'П',r:'P'},{c:'Р',r:'R'},{c:'С',r:'S'},{c:'Т',r:'T'},{c:'У',r:'U'},
-  {c:'Ф',r:'F'},{c:'Х',r:'KH'},{c:'Ц',r:'TS'},{c:'Ч',r:'CH'},{c:'Ш',r:'SH'},{c:'Щ',r:'SHCH'},{c:'Ъ',r:'(hard)'},{c:'Ы',r:'Y'},{c:'Ь',r:'(soft)'},{c:'Э',r:'E'},{c:'Ю',r:'YU'},{c:'Я',r:'YA'},
-];
-
-const ARABIC_ALPHABET = [
-  {c:'ا',r:'Alif (A)'},{c:'ب',r:'Ba (B)'},{c:'ت',r:'Ta (T)'},{c:'ث',r:'Tha (TH)'},{c:'ج',r:'Jim (J)'},{c:'ح',r:'Ha (H)'},{c:'خ',r:'Kha (KH)'},
-  {c:'د',r:'Dal (D)'},{c:'ذ',r:'Dhal (DH)'},{c:'ر',r:'Ra (R)'},{c:'ز',r:'Zay (Z)'},{c:'س',r:'Sin (S)'},{c:'ش',r:'Shin (SH)'},{c:'ص',r:'Sad (S)'},
-  {c:'ض',r:'Dad (D)'},{c:'ط',r:'Ta (T)'},{c:'ظ',r:'Dha (DH)'},{c:'ع',r:'Ain (\')'},{c:'غ',r:'Ghain (GH)'},{c:'ف',r:'Fa (F)'},{c:'ق',r:'Qaf (Q)'},
-  {c:'ك',r:'Kaf (K)'},{c:'ل',r:'Lam (L)'},{c:'م',r:'Mim (M)'},{c:'ن',r:'Nun (N)'},{c:'ه',r:'Ha (H)'},{c:'و',r:'Waw (W/U)'},{c:'ي',r:'Ya (Y/I)'},
+// ===== BUILT-IN ARTICLES =====
+const BUILTIN=[
+  {id:'en1',lang:'en',topic:'neurosurgery',source:'Wikipedia',title:'Glioblastoma Multiforme: Pathophysiology, 5-ALA Fluorescence Surgery, and Immunotherapy Frontiers',snippet:'A deep dive into the most aggressive primary brain tumor — from IDH mutation classification through fluorescence-guided resection to checkpoint inhibitor trials and CAR-T approaches.',text:`<h3>Classification and Molecular Biology</h3><p>Glioblastoma multiforme (GBM), WHO Grade IV, is the most lethal primary brain tumor with median survival of 14-16 months despite maximal treatment. The 2021 WHO Classification requires IDH-wildtype status for GBM diagnosis. MGMT promoter methylation (~40% of cases) predicts temozolomide response. Key alterations: EGFR amplification, PTEN deletion, TERT promoter mutation, chromosome 10q loss.</p><h3>Fluorescence-Guided Surgery</h3><p>5-aminolevulinic acid (5-ALA) at 20 mg/kg orally 3-4h preoperatively metabolizes to protoporphyrin IX (PpIX), which accumulates selectively in malignant glioma cells. Under 375-440nm blue light, tumor fluoresces pink-magenta. The BALANCE RCT demonstrated gross total resection in 65% of 5-ALA patients vs 36% white-light surgery. Eloquent cortex preservation requires awake craniotomy with direct cortical stimulation and DTI tractography of the corticospinal and arcuate fasciculus tracts.</p><h3>Stupp Protocol and Beyond</h3><p>Standard of care: concurrent temozolomide (75mg/m²/day) + radiotherapy (60 Gy in 30 fractions), then 6 cycles adjuvant TMZ. Median survival 14.6 months vs 12.1 months (RT alone). Bevacizumab (anti-VEGF) improves PFS but not OS. TTFields (tumor-treating fields) via Optune device adds ~2.7 months median OS in newly diagnosed GBM.</p><h3>Immunotherapy</h3><p>CheckMate 143/498/548 all failed in unselected GBM. CAR-T targeting EGFRvIII, IL13Rα2, GD2 show early promise. The tumor microenvironment is immunosuppressive — glioma-associated macrophages (GAMs) comprise 30-50% of tumor mass, secreting TGF-β and IL-10 to suppress cytotoxic T cells. Combination approaches targeting multiple escape mechanisms are likely required.</p>`,vocab:[{w:'glioblastoma',t:'most aggressive primary brain tumor'},{w:'MGMT methylation',t:'epigenetic mark predicting chemotherapy response'},{w:'5-ALA',t:'prodrug for fluorescence-guided surgery'},{w:'tractography',t:'DTI-based white matter fiber mapping'},{w:'temozolomide',t:'alkylating agent; standard GBM chemotherapy'}],readTime:'45 min',bias:'Wikipedia'},
+  {id:'en2',lang:'en',topic:'mathematics',source:'arXiv',title:'The Riemann Hypothesis, L-Functions, and the Langlands Program',snippet:'From Euler\'s product formula to BSD conjecture — the central thread connecting zeta functions, prime distribution, elliptic curves, and the grand unified theory of mathematics.',text:`<h3>The Zeta Function</h3><p>ζ(s) = Σn⁻ˢ = ∏_p(1-p⁻ˢ)⁻¹ for Re(s)>1. Riemann (1859) analytically continued ζ to all ℂ minus s=1. Functional equation: ζ(s)=2ˢπˢ⁻¹sin(πs/2)Γ(1-s)ζ(1-s) reveals symmetry about Re(s)=1/2. The Riemann Hypothesis: all nontrivial zeros have Re(s)=1/2. Verified for first 10¹³ zeros (Platt 2021). Consequence: π(x)=li(x)+O(√x log x).</p><h3>The Langlands Program</h3><p>Langlands (1967 letter to Weil) proposed vast correspondences between automorphic representations of reductive groups and Galois representations. L-functions are the central invariants. Wiles (1995) proved the modularity theorem for semistable elliptic curves — a Langlands correspondence case — en route to Fermat's Last Theorem. The BSD conjecture: ord_{s=1}L(E,s)=r (Mordell-Weil rank). Proven for rank 0,1 under additional hypotheses (Kolyvagin, Gross-Zagier).</p><h3>Explicit Formula</h3><p>von Mangoldt: ψ(x)=x-Σ_ρ x^ρ/ρ-log(2π)-(1/2)log(1-x⁻²). The sum over nontrivial zeros ρ shows each zero "oscillates" the prime counting function. GRH would give unconditional deterministic primality testing, sharper Chebotarev density theorem error terms, and Artin's conjecture on primitive roots.</p>`,vocab:[{w:'analytic continuation',t:'extending function beyond original domain'},{w:'Euler product',t:'product over primes encoding unique factorization'},{w:'Langlands correspondence',t:'deep duality between automorphic forms and Galois representations'},{w:'Mordell-Weil rank',t:'number of independent rational points on elliptic curve'},{w:'BSD conjecture',t:'Birch-Swinnerton-Dyer; connects L-function to rank'}],readTime:'48 min',bias:'arXiv'},
+  {id:'es1',lang:'es',topic:'organic chemistry',source:'Wikipedia',title:'Síntesis Total del Taxol: 35 Pasos, 11 Centros Estereogénicos',snippet:'La síntesis total del paclitaxel por Holton y Nicolaou (1994) representa uno de los mayores logros sintéticos del siglo XX, empleando epoxidación asimétrica de Sharpless, reacciones de Wittig y macroaldolización convergente.',text:`<h3>El Problema Sintético</h3><p>El paclitaxel (Taxol, C₄₇H₅₁NO₁₄) estabiliza microtúbulos deteniendo la mitosis en G2/M — mecanismo único entre antineoplásicos. 11 centros estereogénicos, el esqueleto taxano bicíclico con puente oxetano, y alta densidad funcional lo convierten en el everest de la síntesis orgánica.</p><h3>Síntesis de Holton (1994)</h3><p>35 pasos desde (+)-alcanfor (enantiopuro, barato). Pasos clave: oxidación de Baeyer-Villiger → anillo de 6, epoxidación asimétrica de Sharpless para C-4, apertura regioselectiva del epóxido para el oxetano, acoplamiento de la cadena lateral mediante β-lactama de Ojima. Primera síntesis total completada.</p><h3>Síntesis de Nicolaou (1994)</h3><p>Estrategia convergente: dos fragmentos similares (A+B→AB) por macroaldolización para cerrar el anillo de 8 miembros. Reacción de Shapiro para el vinilo, metátesis de olefinas de Grubbs emergente para macrocilización. Publicada semanas después de Holton, igualmente elegante.</p><h3>Impacto</h3><p>La semisíntesis de Holton desde 10-desacetilbaccatina III (hojas de Taxus baccata) resolvió el problema industrial. Hoy el paclitaxel se produce por fermentación de Taxomyces andreanae o síntesis celular.</p>`,vocab:[{w:'estereogénico',t:'chiral center'},{w:'oxetano',t:'4-membered cyclic ether'},{w:'epoxidación asimétrica',t:'Sharpless asymmetric epoxidation'},{w:'macroaldolización',t:'macrocyclization via aldol reaction'},{w:'metátesis',t:'olefin metathesis reaction'}],readTime:'44 min',bias:'Wikipedia'},
+  {id:'ru1',lang:'ru',topic:'physics',source:'Wikipedia',title:'Квантовая механика: уравнение Шрёдингера, принцип неопределённости и интерпретации',snippet:'Полный обзор математического формализма КМ — от постулата Планка и корпускулярно-волнового дуализма до принципа неопределённости Гейзенберга, копенгагенской и многомировой интерпретаций.',text:`<h3>Постулат Планка и фотоэлектрический эффект</h3><p>Планк (1900): E=hν решило ультрафиолетовую катастрофу. Эйнштейн (1905): фотоэлектрический эффект подтверждает квантование самого ЭМ поля — рождение корпускулярно-волнового дуализма.</p><h3>Уравнение Шрёдингера</h3><p>iℏ∂ψ/∂t=Ĥψ. Смысл |ψ(r,t)|²dV — вероятность обнаружения частицы (интерпретация Борна). Стационарные состояния: Ĥψ=Eψ — задача на собственные значения с дискретным спектром E.</p><h3>Принцип неопределённости</h3><p>Гейзенберг (1927): Δx·Δpₓ≥ℏ/2. Следствие некоммутативности: [x̂,p̂ₓ]=iℏ. Не погрешность прибора, а фундаментальное свойство природы. ΔE·Δt≥ℏ/2 объясняет конечную ширину спектральных линий и туннельный эффект.</p><h3>Интерпретации</h3><p>Копенгагенская (Бор/Гейзенберг): ψ — полное описание, коллапс при измерении. Многомировая (Эверетт 1957): ветвление Вселенной без коллапса. Пилотная волна (де Бройль–Бом): реальные траектории частиц, управляемые волновой функцией.</p>`,vocab:[{w:'волновая функция',t:'wavefunction ψ'},{w:'оператор Гамильтона',t:'Hamiltonian operator'},{w:'принцип неопределённости',t:'uncertainty principle'},{w:'коллапс',t:'wavefunction collapse'},{w:'туннельный эффект',t:'quantum tunneling'}],readTime:'46 min',bias:'Wikipedia'},
+  {id:'ar1',lang:'ar',topic:'mathematics',source:'Wikipedia',title:'حساب التفاضل والتكامل: من نيوتن إلى تكامل ليبيغ',snippet:'رحلة تاريخية ورياضية عبر تطور حساب التفاضل والتكامل من نزاع نيوتن-ليبنيز إلى الأسس الصارمة لكوشي وتكامل ليبيغ الحديث.',text:`<h3>نيوتن وليبنيز</h3><p>نيوتن (1666) وليبنيز (1675) طوّرا الحساب بصورة مستقلة. رموز ليبنيز dy/dx و∫ هي السائدة اليوم. مبرهنة الحساب الأساسية: d/dx∫ₐˣf(t)dt=f(x) تربط التفاضل بالتكامل.</p><h3>أسس كوشي الصارمة</h3><p>تعريف النهاية ε-δ: lim_{x→a}f(x)=L إذا ولكل ε>0 وُجد δ>0 بحيث 0<|x-a|<δ⟹|f(x)-L|<ε. المشتقة: f'(x)=lim_{h→0}[f(x+h)-f(x)]/h.</p><h3>تكامل ريمان وليبيغ</h3><p>ريمان (1854): مجاميع الطبقات. ليبيغ (1902): التكامل بالقياس — أشمل وأقوى، يُجيز التبديل بين النهاية والتكامل (نظرية التقارب السائد). أساس التحليل الوظيفي الحديث.</p>`,vocab:[{w:'حساب التفاضل',t:'differential calculus'},{w:'التكامل',t:'integral'},{w:'النهاية',t:'limit'},{w:'المشتقة',t:'derivative'},{w:'التقارب',t:'convergence'}],readTime:'40 min',bias:'Wikipedia'},
+  {id:'de1',lang:'de',topic:'physics',source:'Wikipedia',title:'Allgemeine Relativitätstheorie: Raumzeitkrümmung, Schwarze Löcher und Gravitationswellen',snippet:'Einsteins ART beschreibt Gravitation als Raumzeitkrümmung. Von den Einsteinschen Feldgleichungen über Schwarzschild-Metrik bis zur LIGO-Detektion von Gravitationswellen 2015.',text:`<h3>Äquivalenzprinzip und Feldgleichungen</h3><p>Träge=schwere Masse (Eötvös: 10⁻¹³). Gravitation=Raumzeitkrümmung, nicht Kraft. Einsteinsgleichungen: Gμν+Λgμν=(8πG/c⁴)Tμν. "Materie sagt Raumzeit wie sie sich krümmen soll; Raumzeit sagt Materie wie sie sich bewegen soll" (Wheeler).</p><h3>Schwarzschild-Metrik</h3><p>ds²=-(1-2GM/rc²)c²dt²+(1-2GM/rc²)⁻¹dr²+r²dΩ². Ereignishorizont bei rₛ=2GM/c² (Sonne: ~3km, Erde: ~9mm). Hawking-Strahlung: Schwarze Löcher strahlen thermisch mit T=ℏc³/(8πGMkB).</p><h3>Gravitationswellen</h3><p>LIGO 2015: erste Direktdetektion. Signal von GW150914: Verschmelzung 29+36 M☉ → Schwarzes Loch 62 M☉ + 3 M☉ als Gravitationswellen in 1,3 Mrd. Lj. Nobelpreis 2017. LIGO/Virgo/KAGRA haben bisher >90 Ereignisse detektiert.</p>`,vocab:[{w:'Raumzeitkrümmung',t:'spacetime curvature'},{w:'Feldgleichungen',t:'field equations'},{w:'Ereignishorizont',t:'event horizon'},{w:'Gravitationswellen',t:'gravitational waves'},{w:'Äquivalenzprinzip',t:'equivalence principle'}],readTime:'42 min',bias:'Wikipedia'},
+  {id:'ja1',lang:'ja',topic:'mathematics',source:'Wikipedia',title:'フェルマーの最終定理：谷山・志村予想とワイルズの証明',snippet:'350年の謎。谷山・志村予想、リベットの橋渡し定理、そしてワイルズによる楕円曲線のモジュラー性証明という20世紀最大の数学的業績。',text:`<h3>フェルマーの予想</h3><p>1637年：「xⁿ+yⁿ=zⁿ（n>2）を満たす正の整数解は存在しない。私は真に驚くべき証明を発見したが、余白が狭すぎる。」350年間未解決。</p><h3>谷山・志村予想</h3><p>1950年代：全ての有理数体上の楕円曲線y²=x³+ax+bはモジュラー形式と対応する。リベット(1986)：半安定楕円曲線の谷山・志村予想⟹フェルマーの最終定理（フライ曲線の非モジュラー性による矛盾）。</p><h3>ワイルズの証明</h3><p>1994年9月19日：岩澤理論とオイラー系を組み合わせてガロア表現の変形理論の欠陥を補修。半安定楕円曲線のモジュラー性を証明→フェルマー証明完成。「信じられないほど美しい」と回想。</p>`,vocab:[{w:'楕円曲線',t:'elliptic curve'},{w:'モジュラー形式',t:'modular form'},{w:'ガロア表現',t:'Galois representation'},{w:'岩澤理論',t:'Iwasawa theory'},{w:'半安定',t:'semistable'}],readTime:'38 min',bias:'Wikipedia'},
+  {id:'zh1',lang:'zh',topic:'neurosurgery',source:'Wikipedia',title:'神经外科技术：开颅手术、立体定向与神经内窥镜',snippet:'现代神经外科综合运用开颅手术、立体定向技术和神经内窥镜，实现对脑肿瘤、脑血管病变和功能性疾病的精准微创治疗。',text:`<h3>开颅手术</h3><p>骨瓣开颅：颅骨钻孔+铣刀形成可复位骨瓣(3-10cm)。显微神经外科使用手术显微镜放大8-40倍。神经导航(Brainlab/Medtronic)精度1-3mm。5-ALA荧光引导提高胶质瘤全切率。</p><h3>立体定向手术</h3><p>框架系统精度0.5-1mm。无框架神经导航精度1-3mm但存在脑移位误差。适应症：脑活检、深部脑刺激(DBS)、伽玛刀放射外科。帕金森病DBS靶点：丘脑底核(STN)，高频刺激130-180Hz。</p><h3>神经内窥镜</h3><p>经5-8mm切口进入脑室系统。第三脑室底造瘘术(ETV)治疗梗阻性脑积水，成功率85%。优于永久分流装置，无硅胶管并发症风险。</p>`,vocab:[{w:'开颅手术',t:'craniotomy'},{w:'立体定向',t:'stereotactic surgery'},{w:'神经导航',t:'neuronavigation'},{w:'脑积水',t:'hydrocephalus'},{w:'深部脑刺激',t:'deep brain stimulation (DBS)'}],readTime:'40 min',bias:'Wikipedia'},
+  {id:'sa1',lang:'sa',topic:'linguistics',source:'Wikipedia',title:'पाणिनीयम् व्याकरणम्: अष्टाध्यायी एवं आधुनिकभाषाविज्ञानम्',snippet:'पाणिनेः ३९७६ सूत्रात्मकम् अष्टाध्यायी व्याकरणं विश्वस्य प्राचीनतमं सम्पूर्णभाषाशास्त्रग्रन्थमस्ति। चोम्स्की-सिद्धान्तेन सह तुलनात्मकं विश्लेषणम्।',text:`<h3>अष्टाध्याय्याः संरचना</h3><p>पाणिनिः (ई.पू. ४थ शताब्दी) ३९७६ सूत्रेषु संस्कृतस्य सम्पूर्णं व्याकरणम् अलिखत्। माहेश्वराणि सूत्राणि (शिवसूत्राणि): अइउण् | ऋलृक् | एओङ् — स्वरवर्गीकरणाय। धातुमूलाधारितः विश्लेषणः आधुनिकस्य morphology-सिद्धान्तस्य पूर्वगामी।</p><h3>सन्धिनियमाः</h3><p>अ/आ+अ/आ=आ। इ/ई+इ/ई=ई। उ/ऊ+उ/ऊ=ऊ। विसर्गः+अ=ओ। व्यञ्जनसन्धिः अनुसारेण: त्+च=च्च, त्+ज=ज्ज। एते नियमाः संस्कृतपाठे सर्वत्र आवश्यकाः।</p><h3>आधुनिकभाषाविज्ञानेन सम्बन्धः</h3><p>चोम्स्की पाणिनेः प्रभावम् अङ्गीकरोति। context-sensitive rules, recursive structures, minimalist program — सर्वे पाणिनीयसूत्रेषु प्रतिबिम्बिताः।</p>`,vocab:[{w:'सूत्रम्',t:'grammatical aphorism'},{w:'धातुः',t:'verbal root'},{w:'सन्धिः',t:'phonological junction rule'},{w:'व्याकरणम्',t:'grammar'},{w:'प्रत्ययः',t:'suffix/affix'}],readTime:'38 min',bias:'Wikipedia'},
 ];
 
 // ===== STATE =====
-let state = {
-  currentLang: 'all',
-  currentPage: 'feed',
-  hideRead: false,
-  readArticles: new Set(),
-  savedArticles: new Set(),
-  vocabBank: [],
-  quizStreak: 0,
-  quizCorrect: 0,
-  quizTotal: 0,
-  learnedLetters: {ru: new Set(), ar: new Set()},
-  timerRunning: false,
-  timerSeconds: 0,
-  timerInterval: null,
-  sessionStart: null,
-  currentQuizLang: 'all',
-  currentAlphaLang: 'ru',
-  currentArticleId: null,
-  searchQuery: '',
-  topicFilter: 'all',
+let S={
+  lang:'all',page:'feed',qlang:'all',alphaScript:'ru',
+  read:new Set(),saved:new Set(),vocab:[],
+  qStreak:0,qCorrect:0,qTotal:0,
+  letters:{ru:new Set(),ar:new Set(),'ja-hira':new Set(),'ja-kata':new Set(),zh:new Set(),sa:new Set(),de:new Set()},
+  timerOn:false,timerSec:0,timerInt:null,
+  currentArt:null,searchQ:'',topicF:'all',
+  mined:[],miningOn:false,
+  nodes:[],ideas:[],
+  activeSrc:new Set(['wikipedia','arxiv','pubmed']),
+  mineTopics:new Set(['mathematics','physics','chemistry','neurosurgery','surgery','linguistics','walking','cognitive']),
 };
+let hideRead=false;
 
-// Load from localStorage
-function loadState() {
-  try {
-    const s = localStorage.getItem('polyglot_state');
-    if (s) {
-      const parsed = JSON.parse(s);
-      state.readArticles = new Set(parsed.readArticles || []);
-      state.savedArticles = new Set(parsed.savedArticles || []);
-      state.vocabBank = parsed.vocabBank || [];
-      state.quizStreak = parsed.quizStreak || 0;
-      state.quizCorrect = parsed.quizCorrect || 0;
-      state.quizTotal = parsed.quizTotal || 0;
-      state.timerSeconds = parsed.timerSeconds || 0;
-      state.learnedLetters = {
-        ru: new Set(parsed.learnedLetters?.ru || []),
-        ar: new Set(parsed.learnedLetters?.ar || []),
-      };
-    }
-  } catch(e) {}
+function loadS(){
+  try{
+    const d=JSON.parse(localStorage.getItem('cce_pg_v1')||'{}');
+    S.read=new Set(d.read||[]);S.saved=new Set(d.saved||[]);
+    S.vocab=d.vocab||[];S.qStreak=d.qStreak||0;S.qCorrect=d.qCorrect||0;S.qTotal=d.qTotal||0;
+    S.timerSec=d.timerSec||0;S.mined=d.mined||[];S.nodes=d.nodes||[];
+    const ll=d.letters||{};Object.keys(S.letters).forEach(k=>S.letters[k]=new Set(ll[k]||[]));
+  }catch(e){}
 }
-
-function saveState() {
-  try {
-    localStorage.setItem('polyglot_state', JSON.stringify({
-      readArticles: [...state.readArticles],
-      savedArticles: [...state.savedArticles],
-      vocabBank: state.vocabBank,
-      quizStreak: state.quizStreak,
-      quizCorrect: state.quizCorrect,
-      quizTotal: state.quizTotal,
-      timerSeconds: state.timerSeconds,
-      learnedLetters: {ru:[...state.learnedLetters.ru], ar:[...state.learnedLetters.ar]},
+function saveS(){
+  try{
+    const ll={};Object.keys(S.letters).forEach(k=>ll[k]=[...S.letters[k]]);
+    localStorage.setItem('cce_pg_v1',JSON.stringify({
+      read:[...S.read],saved:[...S.saved],vocab:S.vocab,
+      qStreak:S.qStreak,qCorrect:S.qCorrect,qTotal:S.qTotal,
+      timerSec:S.timerSec,mined:S.mined,nodes:S.nodes,letters:ll,
     }));
-  } catch(e) {}
+  }catch(e){}
 }
+function allArts(){return [...BUILTIN,...S.mined];}
 
 // ===== INIT =====
-function init() {
-  loadState();
-  buildTopicFilters();
+function init(){
+  loadS();
+  buildTopics();
   renderFeed();
-  renderVocab();
   renderStats();
-  renderLangBalance();
-  renderAlphabet('ru');
-  renderAlphaQuiz();
-  nextQuiz();
-  updateTimerDisplay();
+  renderLangBal();
+  renderBiasDist();
+  renderAlpha('ru');
+  renderAQ();
+  nextQ();
+  updateTimer();
+  renderMinedGrid();
+  renderNodes();
+  renderLangSections();
 }
 
-// ===== NAVIGATION =====
-function showPage(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('tab-' + page).classList.add('active');
-  state.currentPage = page;
-  if (page === 'saved') renderSaved();
-  if (page === 'vocab') renderVocab();
-  if (page === 'quiz') nextQuiz();
+// ===== NAV =====
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  S.page=p;
+  if(p==='saved')renderSaved();
+  if(p==='vocab')renderVocab();
+  if(p==='quiz')nextQ();
+  if(p==='langs')renderLangSections();
 }
-
-function filterLang(lang) {
-  state.currentLang = lang;
-  ['all','en','es','ru','ar'].forEach(l => {
-    const pill = document.getElementById('pill-' + l);
-    pill.className = 'lang-pill';
-    if (l === lang) pill.classList.add('active-' + l);
+function setLang(l){
+  S.lang=l;
+  ['all','en','es','ru','ar','de','ja','zh','sa'].forEach(x=>{
+    const el=document.getElementById('pill-'+x);
+    if(!el)return;
+    el.className='lang-pill';
+    if(x===l)el.classList.add('lp-'+x);
   });
-  const info = {all:'Balanced across 4 languages',en:'Showing English articles',es:'Mostrando artículos en español',ru:'Показываю статьи на русском',ar:'عرض المقالات العربية'};
-  document.getElementById('lang-info').textContent = info[lang];
   renderFeed();
+}
+
+// ===== TOPICS =====
+function buildTopics(){
+  const topics=['mathematics','physics','organic chemistry','neurosurgery','general surgery','linguistics','walking/fitness','cognitive science'];
+  const c=document.getElementById('topic-btns');
+  c.innerHTML='<button class="chip active" style="font-size:9px;padding:2px 7px;" onclick="setTopic(\'all\',this)">All</button>';
+  topics.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='chip';b.style.cssText='font-size:9px;padding:2px 7px;';b.textContent=t;
+    b.onclick=function(){setTopic(t,this);};c.appendChild(b);
+  });
+}
+function setTopic(t,el){
+  S.topicF=t;
+  document.querySelectorAll('#topic-btns .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');renderFeed();
 }
 
 // ===== FEED =====
-function buildTopicFilters() {
-  const container = document.getElementById('topic-filters');
-  container.innerHTML = '<button class="filter-chip active" style="font-size:10px;padding:3px 9px;" onclick="setTopic(\'all\',this)">All Topics</button>';
-  TOPICS.forEach(t => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-chip';
-    btn.style.cssText = 'font-size:10px;padding:3px 9px;';
-    btn.textContent = t;
-    btn.onclick = function() { setTopic(t, this); };
-    container.appendChild(btn);
-  });
-}
-
-function setTopic(t, el) {
-  state.topicFilter = t;
-  document.querySelectorAll('#topic-filters .filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderFeed();
-}
-
-function filterArticles() {
-  state.searchQuery = document.getElementById('search-input').value.toLowerCase();
-  renderFeed();
-}
-
-function refreshFeed() {
-  state.searchQuery = '';
-  document.getElementById('search-input').value = '';
-  renderFeed();
-}
-
-let hideRead = false;
-function toggleHideRead() {
-  hideRead = !hideRead;
-  document.getElementById('hide-read-btn').textContent = hideRead ? 'Show Read' : 'Hide Read';
-  renderFeed();
-}
-
-function getFilteredArticles() {
-  let articles = [...ARTICLES];
-  if (state.currentLang !== 'all') articles = articles.filter(a => a.lang === state.currentLang);
-  if (state.topicFilter !== 'all') articles = articles.filter(a => a.topic === state.topicFilter);
-  if (state.searchQuery) {
-    articles = articles.filter(a =>
-      a.title.toLowerCase().includes(state.searchQuery) ||
-      a.snippet.toLowerCase().includes(state.searchQuery) ||
-      a.topic.toLowerCase().includes(state.searchQuery)
-    );
+function toggleHide(){hideRead=!hideRead;document.getElementById('hide-btn').textContent=hideRead?'Show Read':'Hide Read';renderFeed();}
+function renderFeed(){
+  S.searchQ=document.getElementById('search').value.toLowerCase();
+  let arts=allArts();
+  if(S.lang!=='all')arts=arts.filter(a=>a.lang===S.lang);
+  if(S.topicF!=='all')arts=arts.filter(a=>a.topic&&a.topic.toLowerCase().includes(S.topicF));
+  if(S.searchQ)arts=arts.filter(a=>(a.title+a.snippet+a.topic).toLowerCase().includes(S.searchQ));
+  if(hideRead)arts=arts.filter(a=>!S.read.has(a.id));
+  if(S.lang==='all'){
+    const byL={};arts.forEach(a=>{if(!byL[a.lang])byL[a.lang]=[];byL[a.lang].push(a);});
+    arts=[];['en','es','ru','ar','de','ja','zh','sa'].forEach(l=>{if(byL[l])arts.push(...byL[l]);});
   }
-  if (hideRead) articles = articles.filter(a => !state.readArticles.has(a.id));
-  // Balance languages when showing all
-  if (state.currentLang === 'all') {
-    const byLang = {};
-    articles.forEach(a => { if (!byLang[a.lang]) byLang[a.lang] = []; byLang[a.lang].push(a); });
-    articles = [];
-    const maxPerLang = 10;
-    ['en','es','ru','ar'].forEach(l => { if (byLang[l]) articles.push(...byLang[l].slice(0,maxPerLang)); });
-  }
-  return articles;
+  document.getElementById('feed-ct').textContent=arts.length+' articles';
+  const g=document.getElementById('feed-grid');
+  if(!arts.length){g.innerHTML='<div class="empty" style="grid-column:1/-1;">No articles. Try mining more!</div>';return;}
+  g.innerHTML=arts.map(cardHTML).join('');
 }
 
-function renderFeed() {
-  const grid = document.getElementById('articles-grid');
-  const articles = getFilteredArticles();
-  if (articles.length === 0) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>No articles match your filters.</p></div>';
-    return;
-  }
-  grid.innerHTML = articles.map(a => {
-    const isRead = state.readArticles.has(a.id);
-    const isSaved = state.savedArticles.has(a.id);
-    return `<div class="article-card lang-${a.lang} ${isRead?'read':''}" onclick="openReader('${a.id}')">
-      <div class="article-meta">
-        <span class="lang-badge badge-${a.lang}">${a.lang.toUpperCase()}</span>
-        <span class="topic-badge">${a.topic}</span>
-        ${isSaved ? '<span class="inline-badge badge-saved">SAVED</span>' : ''}
-        ${!isRead ? '<span class="inline-badge badge-new">NEW</span>' : ''}
+function cardHTML(a){
+  const isR=S.read.has(a.id),isS=S.saved.has(a.id);
+  const b=BIAS[a.source]||{l:'Unknown',s:.5,c:'bc'};
+  const isM=S.mined.find(x=>x.id===a.id);
+  return`<div class="acard l-${a.lang} ${isR?'read':''}" onclick="openR('${a.id}')">
+    <div class="ameta">
+      <span class="lbadge lb-${a.lang}">${a.lang.toUpperCase()}</span>
+      <span class="tbadge">${a.topic||'general'}</span>
+      <span class="bias-badge ${b.c}">${b.l}</span>
+      ${isM?'<span class="inline-badge ib-live">LIVE</span>':''}
+      ${isS?'<span class="inline-badge ib-saved">SAVED</span>':''}
+    </div>
+    <div class="atitle">${a.title}</div>
+    <div class="asnip">${a.snippet}</div>
+    <div class="afooter">
+      <span class="atime">${a.readTime||'?'} · ${a.source}</span>
+      <div class="ibtns" onclick="event.stopPropagation()">
+        <button class="ibtn ${isR?'done':''}" onclick="toggleR('${a.id}')">${isR?'✓':'Read'}</button>
+        <button class="ibtn" onclick="saveA('${a.id}')">☆</button>
       </div>
-      <div class="article-title">${a.title}</div>
-      <div class="article-snippet">${a.snippet}</div>
-      <div class="article-footer">
-        <span class="read-time">${a.readTime} · ${a.source}</span>
-        <div class="article-actions" onclick="event.stopPropagation()">
-          <button class="icon-btn ${isRead?'done':''}" onclick="toggleRead('${a.id}')">${isRead?'✓ Read':'Mark Read'}</button>
-          <button class="icon-btn" onclick="saveArticle('${a.id}')">☆</button>
-        </div>
+    </div>
+  </div>`;
+}
+
+// ===== LANGUAGE SECTIONS =====
+function renderLangSections(){
+  const c=document.getElementById('lang-sections');
+  const byL={};
+  allArts().forEach(a=>{if(!byL[a.lang])byL[a.lang]=[];byL[a.lang].push(a);});
+  c.innerHTML=['en','es','ru','ar','de','ja','zh','sa'].map(l=>{
+    const arts=byL[l]||[];
+    const info=LANGS_INFO[l];
+    return`<div class="lang-section">
+      <div class="lang-section-header" onclick="toggleLangSec('ls-${l}')">
+        <span class="lang-flag">${info.flag}</span>
+        <span class="lang-name" style="color:${info.color}">${info.name}</span>
+        <span class="tbadge" style="margin-left:8px;">${l.toUpperCase()}</span>
+        <span class="lang-count">${arts.length} articles · ${S.read.size?[...S.read].filter(id=>allArts().find(a=>a.id===id&&a.lang===l)).length:0} read</span>
+        <span style="color:var(--muted);font-size:12px;margin-left:8px;">▾</span>
+      </div>
+      <div class="lang-articles" id="ls-${l}">
+        ${arts.length?arts.map(cardHTML).join(''):'<div class="empty">No '+info.name+' articles yet. Mine more!</div>'}
       </div>
     </div>`;
   }).join('');
+}
+function toggleLangSec(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ===== DATA MINE =====
+function toggleSrc(s,el){if(S.activeSrc.has(s))S.activeSrc.delete(s);else S.activeSrc.add(s);el.classList.toggle('active');}
+function toggleMT(t,el){if(S.mineTopics.has(t))S.mineTopics.delete(t);else S.mineTopics.add(t);el.classList.toggle('active');}
+function logM(msg,type=''){
+  const log=document.getElementById('mine-log');
+  const e=document.createElement('div');
+  e.className='mle'+(type?' '+type:'');
+  e.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
+  log.appendChild(e);log.scrollTop=log.scrollHeight;
+}
+async function startMining(){
+  if(S.miningOn)return;
+  S.miningOn=true;
+  const btn=document.getElementById('mine-btn');
+  btn.textContent='⏳ Mining...';btn.disabled=true;
+  document.getElementById('mine-status').textContent='Mining...';
+  document.getElementById('mine-log').innerHTML='';
+  let fetched=0;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const wikiLangs={en:'en',es:'es',ru:'ru',ar:'ar',de:'de',ja:'ja',zh:'zh',sa:'sa'};
+  const topics=[...S.mineTopics];
+
+  if(S.activeSrc.has('wikipedia')){
+    for(const lang of Object.keys(wikiLangs)){
+      for(const topic of topics.slice(0,2)){
+        try{
+          logM(`Wikipedia [${lang}]: ${topic}`);
+          const q=encodeURIComponent(topic==='chemistry'?'organic chemistry':topic==='cognitive'?'cognitive science':topic==='walking'?'physical fitness':topic);
+          const r=await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${q}`);
+          if(!r.ok)throw new Error(r.status);
+          const d=await r.json();
+          if(d.extract&&d.extract.length>150&&!S.mined.find(a=>a.title===d.title&&a.lang===lang)){
+            const wc=d.extract.split(' ').length;
+            S.mined.push({
+              id:'w_'+lang+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+              lang,topic,source:'Wikipedia',
+              title:d.title,
+              snippet:d.extract.substring(0,200)+'...',
+              text:'<p>'+d.extract.replace(/\n\n/g,'</p><p>')+'</p>',
+              vocab:[],readTime:Math.max(8,Math.round(wc/200))+' min',
+              url:d.content_urls?.desktop?.page||'',
+            });
+            fetched++;logM(`✓ "${d.title}" (${lang})`,'ok');
+          }
+          await sleep(250);
+        }catch(e){logM(`✗ ${lang}/${topic}: ${e.message}`,'er');}
+      }
+    }
+  }
+
+  if(S.activeSrc.has('arxiv')){
+    const qs=[{q:'glioblastoma surgery resection',t:'neurosurgery'},{q:'prime numbers zeta function',t:'mathematics'},{q:'organic synthesis stereoselective',t:'chemistry'},{q:'quantum mechanics topological',t:'physics'},{q:'deep brain stimulation parkinson',t:'neurosurgery'},{q:'general surgery laparoscopic',t:'surgery'}];
+    for(const {q,t} of qs.slice(0,4)){
+      try{
+        logM(`arXiv: ${q}`);
+        const r=await fetch(`https://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(q)}&max_results=2&sortBy=relevance`);
+        const txt=await r.text();
+        const xml=new DOMParser().parseFromString(txt,'text/xml');
+        xml.querySelectorAll('entry').forEach(e=>{
+          const title=e.querySelector('title')?.textContent?.trim()||'';
+          const summary=e.querySelector('summary')?.textContent?.trim()||'';
+          if(summary.length>100&&!S.mined.find(a=>a.title===title)){
+            S.mined.push({
+              id:'ax_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+              lang:'en',topic:t,source:'arXiv',title,
+              snippet:summary.substring(0,200)+'...',
+              text:'<p>'+summary.replace(/\n\n/g,'</p><p>')+'</p>',
+              vocab:[],readTime:Math.max(15,Math.round(summary.split(' ').length/180))+' min',
+            });
+            fetched++;logM(`✓ arXiv: "${title.substring(0,45)}..."`,'ok');
+          }
+        });
+        await sleep(400);
+      }catch(e){logM(`✗ arXiv: ${e.message}`,'er');}
+    }
+  }
+
+  if(S.activeSrc.has('pubmed')){
+    const pmTopics=['neurosurgery craniotomy','laparoscopic surgery outcomes','brain tumor resection'];
+    for(const pt of pmTopics.slice(0,2)){
+      try{
+        logM(`PubMed: ${pt}`);
+        const searchR=await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(pt)}&retmax=3&retmode=json`);
+        const searchD=await searchR.json();
+        const ids=searchD.esearchresult?.idlist||[];
+        for(const pmid of ids.slice(0,2)){
+          const sumR=await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`);
+          const sumD=await sumR.json();
+          const art=sumD.result?.[pmid];
+          if(art&&art.title&&!S.mined.find(a=>a.title===art.title)){
+            S.mined.push({
+              id:'pm_'+pmid,lang:'en',topic:'surgery',source:'PubMed',
+              title:art.title,
+              snippet:`Published ${art.pubdate||''}. Authors: ${(art.authors||[]).slice(0,3).map(a=>a.name).join(', ')}. Source: ${art.source||'PubMed'}.`,
+              text:`<p>${art.title}</p><p>Published: ${art.pubdate||'N/A'} | Journal: ${art.source||'N/A'} | PMID: ${pmid}</p><p>Access full text at: <a href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/" target="_blank" style="color:var(--en)">PubMed ↗</a></p>`,
+              vocab:[],readTime:'20+ min',
+              url:`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+            });
+            fetched++;logM(`✓ PubMed: "${art.title.substring(0,45)}..."`,'ok');
+          }
+          await sleep(200);
+        }
+      }catch(e){logM(`✗ PubMed: ${e.message}`,'er');}
+    }
+  }
+
+  logM(`Done. ${fetched} new articles.`,'ok');
+  document.getElementById('mine-status').textContent=`Last mined: +${fetched} articles`;
+  S.miningOn=false;btn.textContent='⚡ MINE NOW';btn.disabled=false;
+  saveS();renderMinedGrid();renderFeed();renderLangBal();renderLangSections();
+}
+function renderMinedGrid(){
+  document.getElementById('mined-ct').textContent=S.mined.length+' articles';
+  const g=document.getElementById('mined-grid');
+  if(!S.mined.length){g.innerHTML='<div class="empty" style="grid-column:1/-1;">No mined articles. Click MINE NOW.</div>';return;}
+  g.innerHTML=[...S.mined].reverse().slice(0,12).map(cardHTML).join('');
+}
+
+// ===== CCE-G: LaTeX AI Generator =====
+async function generateIdeas(){
+  const latex=document.getElementById('latex-in').value.trim();
+  if(!latex){alert('Paste your LaTeX code first.');return;}
+  document.getElementById('ai-status').style.display='flex';
+  document.getElementById('gen-btn').disabled=true;
+  document.getElementById('ideas-output').style.display='none';
+
+  try{
+    const minedTitles=S.mined.slice(-10).map(a=>a.title).join('; ');
+    const prompt=`You are a research paper idea generator for an INTJ scientist specializing in mathematics, physics, organic chemistry, neurosurgery, and surgery.
+
+The researcher has provided this LaTeX paper:
+${latex.substring(0,2000)}
+
+Recently mined related papers: ${minedTitles||'none yet'}
+
+Generate exactly 3 novel research paper ideas that:
+1. Extend or contradict the researcher's work
+2. Connect to adjacent fields (e.g., math+neurosurgery, chemistry+surgery)
+3. Are specific and actionable
+
+For each idea, respond in this EXACT JSON format only (no markdown, no explanation outside JSON):
+{
+  "ideas": [
+    {
+      "title": "Full paper title",
+      "abstract": "2-3 sentence abstract",
+      "methods": "Key methodology in 1-2 sentences",
+      "connection": "How it connects to the input paper",
+      "latex": "\\\\documentclass{article}\\n\\\\begin{document}\\n\\\\title{TITLE}\\n\\\\begin{abstract}\\nABSTRACT\\n\\\\end{abstract}\\n\\\\section{Introduction}\\nINTRODUCTION TEXT\\n\\\\section{Methods}\\nMETHODS TEXT\\n\\\\section{Conclusion}\\nCONCLUSION TEXT\\n\\\\end{document}"
+    }
+  ]
+}`;
+
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        messages:[{role:'user',content:prompt}],
+      }),
+    });
+    const data=await resp.json();
+    const text=data.content?.map(c=>c.text||'').join('')||'';
+    let parsed;
+    try{
+      const clean=text.replace(/```json|```/g,'').trim();
+      parsed=JSON.parse(clean);
+    }catch(e){
+      parsed={ideas:[{
+        title:'AI Response (parsing error)',
+        abstract:text.substring(0,300),
+        methods:'See raw output above.',
+        connection:'Direct extension of your work.',
+        latex:'% See abstract above\n\\documentclass{article}\n\\begin{document}\n'+text.substring(0,500)+'\n\\end{document}',
+      }]};
+    }
+    S.ideas=parsed.ideas||[];
+    renderIdeas();
+    document.getElementById('ideas-output').style.display='block';
+  }catch(e){
+    document.getElementById('ideas-list').innerHTML=`<div style="color:var(--red);font-size:11px;">Error: ${e.message}. Make sure you're using the Claude API-enabled version.</div>`;
+    document.getElementById('ideas-output').style.display='block';
+  }
+  document.getElementById('ai-status').style.display='none';
+  document.getElementById('gen-btn').disabled=false;
+}
+
+function renderIdeas(){
+  const c=document.getElementById('ideas-list');
+  c.innerHTML=S.ideas.map((idea,i)=>`
+    <div class="idea-card">
+      <div class="idea-title">${idea.title}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;"><strong style="color:var(--blue);">Connection:</strong> ${idea.connection}</div>
+      <div style="font-size:11px;color:var(--text);margin-bottom:4px;">${idea.abstract}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:8px;"><strong>Methods:</strong> ${idea.methods}</div>
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <button class="btn btn-y" onclick="copyLatex(${i})" style="font-size:10px;padding:3px 9px;">Copy LaTeX</button>
+        <button class="btn btn-b" onclick="addIdeaNode(${i})" style="font-size:10px;padding:3px 9px;">⬡ Add to Graph</button>
+      </div>
+      <div class="idea-latex">${escHTML(idea.latex||'')}</div>
+    </div>`).join('');
+}
+function escHTML(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function copyLatex(i){navigator.clipboard.writeText(S.ideas[i]?.latex||'').then(()=>alert('LaTeX copied!'));}
+function copyIdeas(){navigator.clipboard.writeText(S.ideas.map(i=>i.latex).join('\n\n%---\n\n')).then(()=>alert('All LaTeX copied!'));}
+function addIdeaNode(i){
+  const idea=S.ideas[i];
+  if(!idea)return;
+  S.nodes.push({id:'n_'+Date.now(),name:idea.title,field:'research',def:idea.abstract,connections:[],strength:0.8,created:Date.now()});
+  saveS();renderNodes();showPage('cce');
+}
+
+// ===== CCE-G: Knowledge Graph =====
+function compressToNode(){
+  const latex=document.getElementById('latex-in').value.trim();
+  if(!latex)return;
+  const titleMatch=latex.match(/\\title\{([^}]+)\}/);
+  const abstrMatch=latex.match(/\\begin\{abstract\}([\s\S]*?)\\end\{abstract\}/);
+  const name=titleMatch?titleMatch[1]:'Untitled Concept';
+  const def=abstrMatch?abstrMatch[1].trim().substring(0,300):'Extracted from LaTeX input';
+  S.nodes.push({id:'n_'+Date.now(),name,field:'research',def,connections:[],strength:0.9,created:Date.now()});
+  saveS();renderNodes();
+  alert('Added "'+name+'" to knowledge graph.');
+}
+function showAddNode(){
+  const f=document.getElementById('add-node-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+function addNode(){
+  const name=document.getElementById('nn-name').value.trim();
+  const field=document.getElementById('nn-field').value.trim()||'general';
+  const def=document.getElementById('nn-def').value.trim();
+  if(!name){alert('Enter a concept name.');return;}
+  S.nodes.push({id:'n_'+Date.now(),name,field,def,connections:[],strength:0.5,created:Date.now()});
+  saveS();renderNodes();
+  document.getElementById('add-node-form').style.display='none';
+  document.getElementById('nn-name').value='';
+  document.getElementById('nn-field').value='';
+  document.getElementById('nn-def').value='';
+}
+function renderNodes(){
+  const g=document.getElementById('node-grid');
+  const em=document.getElementById('node-empty');
+  document.getElementById('s-nodes').textContent=S.nodes.length;
+  if(!S.nodes.length){g.innerHTML='';em.style.display='block';return;}
+  em.style.display='none';
+  const fieldColors={'mathematics':'var(--en)','physics':'var(--ru)','chemistry':'var(--es)','neurosurgery':'var(--ar)','surgery':'var(--green)','research':'var(--blue)','linguistics':'var(--ja)','general':'var(--muted)'};
+  g.innerHTML=[...S.nodes].reverse().map(n=>`
+    <div class="node-card" title="${n.def||''}">
+      <div class="node-name">${n.name}</div>
+      <div class="node-def">${(n.def||'').substring(0,100)}${n.def&&n.def.length>100?'...':''}</div>
+      <div class="node-tags">
+        <span class="ntag" style="color:${fieldColors[n.field]||'var(--muted)'};">${n.field}</span>
+        <span class="ntag">${new Date(n.created).toLocaleDateString()}</span>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" style="width:${Math.round((n.strength||0.5)*100)}%;"></div></div>
+    </div>`).join('');
 }
 
 // ===== READER =====
-function openReader(id) {
-  const a = ARTICLES.find(x => x.id === id);
-  if (!a) return;
-  state.currentArticleId = id;
-  const overlay = document.getElementById('reader-overlay');
-  document.getElementById('reader-title').textContent = a.title;
-  document.getElementById('reader-meta-top').innerHTML = `<span class="lang-badge badge-${a.lang}">${a.lang.toUpperCase()}</span><span>${a.topic}</span><span>${a.readTime}</span><span style="color:var(--muted)">${a.source}</span>`;
-  document.getElementById('reader-meta').innerHTML = `<span>${a.readTime} read</span><span>${a.source}</span>`;
-  const textEl = document.getElementById('reader-text');
-  textEl.innerHTML = a.text;
-  textEl.className = 'reader-text' + (a.lang === 'ar' ? ' ar' : '');
-  const chips = document.getElementById('reader-vocab-chips');
-  chips.innerHTML = a.vocab.map(v => {
-    const saved = state.vocabBank.find(w => w.word === v.w && w.lang === a.lang);
-    return `<span class="vocab-chip ${saved?'saved':''}" title="${v.t}" onclick="saveVocabWord('${a.id}','${v.w}','${v.t}')">${v.w}</span>`;
-  }).join('');
-  document.getElementById('btn-mark-read').textContent = state.readArticles.has(id) ? '✓ Marked Read' : '✓ Mark Read';
-  document.getElementById('btn-save').textContent = state.savedArticles.has(id) ? '★ Saved' : '☆ Save';
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+function openR(id){
+  const a=allArts().find(x=>x.id===id);if(!a)return;
+  S.currentArt=id;
+  const b=BIAS[a.source]||null;
+  const rbias=document.getElementById('rbias');
+  if(b&&!['Academic','Neutral'].includes(b.l)){
+    rbias.style.display='flex';
+    document.getElementById('bias-mk').style.left=(b.s*100)+'%';
+    document.getElementById('bias-lbl').textContent=b.l;
+  }else{rbias.style.display='none';}
+  document.getElementById('rmeta-top').innerHTML=`
+    <span class="lbadge lb-${a.lang}">${a.lang.toUpperCase()}</span>
+    <span class="tbadge">${a.topic}</span>
+    ${b?`<span class="bias-badge ${b.c}">${b.l}</span>`:''}
+    <span style="font-size:9px;color:var(--muted)">${a.readTime} · ${a.source}</span>`;
+  document.getElementById('rtitle').textContent=a.title;
+  document.getElementById('rmeta').innerHTML=`<span>${a.readTime}</span><span>${a.source}</span>${a.url?`<a href="${a.url}" target="_blank" style="color:var(--en);font-size:10px;">Full text ↗</a>`:''}`;
+  const rt=document.getElementById('rtext');
+  rt.innerHTML=a.text;
+  rt.className='rtext'+(['ar','sa'].includes(a.lang)?' rtl':['ja','zh'].includes(a.lang)?' cjk':'');
+  const vc=document.getElementById('vchips');
+  const rvs=document.getElementById('rvocab');
+  if(a.vocab&&a.vocab.length){
+    vc.innerHTML=a.vocab.map(v=>{
+      const sv=S.vocab.find(w=>w.word===v.w&&w.lang===a.lang);
+      return`<span class="vchip ${sv?'saved':''}" title="${v.t}" onclick="saveVW('${a.id}','${v.w}','${v.t}')">${v.w}</span>`;
+    }).join('');
+    rvs.style.display='';
+  }else{rvs.style.display='none';}
+  document.getElementById('btn-read').textContent=S.read.has(id)?'✓ Read':'✓ Mark Read';
+  document.getElementById('btn-save').textContent=S.saved.has(id)?'★ Saved':'☆ Save';
+  document.getElementById('rover').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-
-function closeReader(e) {
-  if (e.target === document.getElementById('reader-overlay')) closeReaderPanel();
+function closeR(e){if(e.target===document.getElementById('rover'))closeRP();}
+function closeRP(){document.getElementById('rover').classList.remove('open');document.body.style.overflow='';renderFeed();}
+function markRead(){
+  if(!S.currentArt)return;
+  S.read.add(S.currentArt);
+  const a=allArts().find(x=>x.id===S.currentArt);
+  if(a&&a.vocab)a.vocab.forEach(v=>addVW(a.id,v.w,v.t,a.lang));
+  document.getElementById('btn-read').textContent='✓ Read';
+  renderStats();renderLangBal();saveS();
 }
-
-function closeReaderPanel() {
-  document.getElementById('reader-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  renderFeed();
-}
-
-function markCurrentRead() {
-  if (!state.currentArticleId) return;
-  state.readArticles.add(state.currentArticleId);
-  // Add article vocab to bank
-  const a = ARTICLES.find(x => x.id === state.currentArticleId);
-  if (a) {
-    a.vocab.forEach(v => addVocabWord(a.id, v.w, v.t, a.lang));
+function saveArt(){if(S.currentArt){S.saved.add(S.currentArt);document.getElementById('btn-save').textContent='★ Saved';saveS();}}
+function saveA(id){S.saved.add(id);saveS();renderFeed();}
+function toggleR(id){
+  if(S.read.has(id)){S.read.delete(id);}
+  else{
+    S.read.add(id);
+    const a=allArts().find(x=>x.id===id);
+    if(a&&a.vocab)a.vocab.forEach(v=>addVW(a.id,v.w,v.t,a.lang));
   }
-  document.getElementById('btn-mark-read').textContent = '✓ Marked Read';
-  renderStats(); renderLangBalance(); saveState();
-}
-
-function saveCurrentArticle() {
-  if (!state.currentArticleId) return;
-  saveArticle(state.currentArticleId);
-  document.getElementById('btn-save').textContent = '★ Saved';
-}
-
-function saveArticle(id) {
-  state.savedArticles.add(id);
-  saveState(); renderFeed();
-}
-
-function toggleRead(id) {
-  if (state.readArticles.has(id)) {
-    state.readArticles.delete(id);
-  } else {
-    state.readArticles.add(id);
-    const a = ARTICLES.find(x => x.id === id);
-    if (a) a.vocab.forEach(v => addVocabWord(a.id, v.w, v.t, a.lang));
-  }
-  renderStats(); renderLangBalance(); renderFeed(); saveState();
+  renderStats();renderLangBal();renderFeed();saveS();
 }
 
 // ===== VOCAB =====
-function addVocabWord(articleId, word, translation, lang) {
-  const exists = state.vocabBank.find(w => w.word === word && w.lang === lang);
-  if (!exists) {
-    state.vocabBank.push({ word, translation, lang, articleId, mastery: 0, seen: 0, correct: 0 });
-  }
+function addVW(artId,word,translation,lang){
+  if(!S.vocab.find(w=>w.word===word&&w.lang===lang))
+    S.vocab.push({word,translation,lang,artId,mastery:0,seen:0,correct:0});
 }
-
-function saveVocabWord(articleId, word, translation) {
-  const a = ARTICLES.find(x => x.id === articleId);
-  if (!a) return;
-  addVocabWord(articleId, word, translation, a.lang);
-  const chips = document.querySelectorAll('#reader-vocab-chips .vocab-chip');
-  chips.forEach(c => { if (c.textContent === word) c.classList.add('saved'); });
-  renderVocab(); saveState();
+function saveVW(artId,word,translation){
+  const a=allArts().find(x=>x.id===artId);if(!a)return;
+  addVW(artId,word,translation,a.lang);
+  document.querySelectorAll('#vchips .vchip').forEach(c=>{if(c.textContent===word)c.classList.add('saved');});
+  renderVocab();saveS();
 }
-
-function filterVocab(lang, el) {
-  document.querySelectorAll('#vocab-lang-filters .filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderVocab(lang);
+let vlang='all';
+function fVocab(l,el){
+  vlang=l;
+  document.querySelectorAll('#vocab-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');renderVocab();
 }
-
-const MASTERY_LABELS = ['New','Learning','Familiar','Mastered'];
-const MASTERY_COLORS = ['var(--muted)','var(--accent-quiz)','var(--accent-ar)','var(--accent-en)'];
-
-function renderVocab(lang = 'all') {
-  const tbody = document.getElementById('vocab-tbody');
-  let words = state.vocabBank;
-  if (lang !== 'all') words = words.filter(w => w.lang === lang);
-  if (words.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--muted)">Read articles to populate your vocabulary bank.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = words.map(w => {
-    const a = ARTICLES.find(x => x.id === w.articleId);
-    const mastery = Math.min(w.mastery || 0, 3);
-    return `<tr>
-      <td class="word-native" style="color:var(--text)">${w.word}</td>
-      <td><span class="lang-badge badge-${w.lang}">${w.lang.toUpperCase()}</span></td>
-      <td style="color:var(--muted);font-size:11px;">${w.translation}</td>
-      <td style="font-size:11px;color:var(--muted);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a ? a.title.substring(0,40)+'…' : '—'}</td>
-      <td><span class="mastery-dot mastery-${mastery}"></span><span style="font-size:11px;color:var(--muted)">${MASTERY_LABELS[mastery]}</span></td>
-    </tr>`;
+const ML=['New','Learning','Familiar','Mastered'];
+function renderVocab(){
+  let words=vlang==='all'?S.vocab:S.vocab.filter(w=>w.lang===vlang);
+  document.getElementById('vocab-ct').textContent=words.length+' words';
+  const tb=document.getElementById('vtbody');
+  if(!words.length){tb.innerHTML='<tr><td colspan="5" style="padding:18px;text-align:center;color:var(--muted);">Read articles to build vocabulary.</td></tr>';return;}
+  tb.innerHTML=words.map(w=>{
+    const a=allArts().find(x=>x.id===w.artId);
+    const m=Math.min(w.mastery||0,3);
+    return`<tr><td class="wn">${w.word}</td>
+      <td><span class="lbadge lb-${w.lang}">${w.lang.toUpperCase()}</span></td>
+      <td style="color:var(--muted);font-size:10px;">${w.translation}</td>
+      <td style="font-size:9px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a?a.title.substring(0,30)+'…':'—'}</td>
+      <td><span class="md m${m}"></span><span style="font-size:9px;color:var(--muted);">${ML[m]}</span></td></tr>`;
   }).join('');
-  document.getElementById('stat-words').textContent = words.filter(w => w.mastery >= 2).length;
+  document.getElementById('s-words').textContent=words.filter(w=>w.mastery>=2).length;
 }
 
 // ===== QUIZ =====
-let currentQuizWord = null;
-
-function setQuizLang(lang, el) {
-  state.currentQuizLang = lang;
-  document.querySelectorAll('#quiz-lang-filter .filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  nextQuiz();
-}
-
-function getQuizWords() {
-  let words = [...state.vocabBank];
-  if (state.currentQuizLang !== 'all') words = words.filter(w => w.lang === state.currentQuizLang);
-  return words;
-}
-
-function nextQuiz() {
-  const words = getQuizWords();
-  const feedback = document.getElementById('q-feedback');
-  feedback.className = 'quiz-feedback';
-
-  if (words.length < 2) {
-    document.getElementById('q-word').textContent = '—';
-    document.getElementById('q-lang-label').textContent = 'Read more articles to populate the quiz';
-    document.getElementById('q-context').textContent = 'No vocabulary yet';
-    document.getElementById('q-options').innerHTML = '';
-    return;
+let curQ=null;
+function setQL(l,el){S.qlang=l;document.querySelectorAll('#ql-chips .chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');nextQ();}
+function nextQ(){
+  document.getElementById('q-fb').className='qfb';
+  let words=S.qlang==='all'?S.vocab:S.vocab.filter(w=>w.lang===S.qlang);
+  if(words.length<2){
+    document.getElementById('q-word').textContent='—';
+    document.getElementById('q-lang').textContent='Read articles to populate quiz';
+    document.getElementById('q-ctx').textContent='';
+    document.getElementById('q-opts').innerHTML='';return;
   }
-
-  // Weight toward lower mastery words
-  const weighted = words.flatMap(w => Array(Math.max(1, 4 - (w.mastery || 0))).fill(w));
-  currentQuizWord = weighted[Math.floor(Math.random() * weighted.length)];
-
-  const langNames = {en:'English',es:'Español',ru:'Русский',ar:'العربية'};
-  document.getElementById('q-lang-label').textContent = langNames[currentQuizWord.lang] + ' vocabulary';
-  const wordEl = document.getElementById('q-word');
-  wordEl.textContent = currentQuizWord.word;
-  wordEl.className = 'quiz-word' + (currentQuizWord.lang === 'ar' ? ' ar' : (currentQuizWord.lang === 'ru' ? ' ru' : ''));
-
-  const a = ARTICLES.find(x => x.id === currentQuizWord.articleId);
-  document.getElementById('q-context').textContent = a ? `From: "${a.title.substring(0,50)}…"` : '';
-
-  // Build options: 1 correct + 3 random wrong
-  const wrong = words.filter(w => w.word !== currentQuizWord.word && w.lang === currentQuizWord.lang);
-  const shuffled = wrong.sort(() => Math.random()-0.5).slice(0,3);
-  const options = [currentQuizWord, ...shuffled].sort(() => Math.random()-0.5);
-
-  document.getElementById('q-options').innerHTML = options.map(o =>
-    `<button class="quiz-option" onclick="answerQuiz('${o.word === currentQuizWord.word ? 'correct' : 'wrong'}', this, '${o.word}')">
-      ${o.translation}
-    </button>`
-  ).join('');
+  const weighted=words.flatMap(w=>Array(Math.max(1,4-(w.mastery||0))).fill(w));
+  curQ=weighted[Math.floor(Math.random()*weighted.length)];
+  const LN={en:'English',es:'Español',ru:'Русский',ar:'العربية',de:'Deutsch',ja:'日本語',zh:'中文',sa:'संस्कृत'};
+  document.getElementById('q-lang').textContent=(LN[curQ.lang]||curQ.lang)+' vocabulary';
+  const we=document.getElementById('q-word');
+  we.textContent=curQ.word;
+  we.className='qword'+(['ar','sa'].includes(curQ.lang)?' rtl':['ja','zh'].includes(curQ.lang)?' cjk':'');
+  const a=allArts().find(x=>x.id===curQ.artId);
+  document.getElementById('q-ctx').textContent=a?'From: "'+a.title.substring(0,40)+'…"':'';
+  const wrong=words.filter(w=>w.word!==curQ.word&&w.lang===curQ.lang).sort(()=>Math.random()-.5).slice(0,3);
+  if(wrong.length<3){const f=S.vocab.filter(w=>w.word!==curQ.word&&!wrong.find(x=>x.word===w.word)).sort(()=>Math.random()-.5).slice(0,3-wrong.length);wrong.push(...f);}
+  const opts=[curQ,...wrong].sort(()=>Math.random()-.5);
+  document.getElementById('q-opts').innerHTML=opts.map(o=>`<button class="qopt" onclick="ansQ(${o.word===curQ.word},this)">${o.translation}</button>`).join('');
 }
-
-function answerQuiz(result, el, word) {
-  document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
-  const feedback = document.getElementById('q-feedback');
-  state.quizTotal++;
-
-  if (result === 'correct') {
-    el.classList.add('correct');
-    state.quizStreak++;
-    state.quizCorrect++;
-    feedback.textContent = `✓ Correct! "${currentQuizWord.word}" means: ${currentQuizWord.translation}`;
-    feedback.className = 'quiz-feedback show correct-fb';
-    if (currentQuizWord) {
-      currentQuizWord.mastery = Math.min(3, (currentQuizWord.mastery || 0) + 1);
-      currentQuizWord.correct = (currentQuizWord.correct || 0) + 1;
-    }
-  } else {
-    el.classList.add('wrong');
-    document.querySelectorAll('.quiz-option').forEach(b => {
-      if (b.textContent.trim() === currentQuizWord.translation) b.classList.add('correct');
-    });
-    state.quizStreak = 0;
-    feedback.textContent = `✗ The answer was: "${currentQuizWord.translation}"`;
-    feedback.className = 'quiz-feedback show wrong-fb';
-    if (currentQuizWord) {
-      currentQuizWord.mastery = Math.max(0, (currentQuizWord.mastery || 0) - 1);
-    }
+function ansQ(correct,el){
+  document.querySelectorAll('.qopt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('q-fb');S.qTotal++;
+  if(correct){
+    el.classList.add('ok');S.qStreak++;S.qCorrect++;
+    fb.textContent='✓ Correct! "'+curQ.word+'" = '+curQ.translation;
+    fb.className='qfb show ok';
+    if(curQ)curQ.mastery=Math.min(3,(curQ.mastery||0)+1);
+  }else{
+    el.classList.add('no');
+    document.querySelectorAll('.qopt').forEach(b=>{if(b.textContent.trim()===curQ.translation)b.classList.add('ok');});
+    S.qStreak=0;fb.textContent='✗ Answer: "'+curQ.translation+'"';fb.className='qfb show no';
+    if(curQ)curQ.mastery=Math.max(0,(curQ.mastery||0)-1);
   }
-  if (currentQuizWord) currentQuizWord.seen = (currentQuizWord.seen || 0) + 1;
-
-  updateQuizStats();
-  saveState();
-  setTimeout(nextQuiz, 1800);
-}
-
-function updateQuizStats() {
-  document.getElementById('q-streak').textContent = state.quizStreak;
-  document.getElementById('q-correct').textContent = state.quizCorrect;
-  document.getElementById('q-total').textContent = state.quizTotal;
-  document.getElementById('q-pct').textContent = state.quizTotal > 0 ? Math.round(100*state.quizCorrect/state.quizTotal) + '%' : '—';
-  document.getElementById('stat-streak').textContent = state.quizStreak;
+  if(curQ){curQ.seen=(curQ.seen||0)+1;curQ.correct=(curQ.correct||0)+(correct?1:0);}
+  document.getElementById('q-streak').textContent=S.qStreak;
+  document.getElementById('q-cor').textContent=S.qCorrect;
+  document.getElementById('q-tot').textContent=S.qTotal;
+  document.getElementById('q-pct').textContent=S.qTotal>0?Math.round(100*S.qCorrect/S.qTotal)+'%':'—';
+  document.getElementById('s-streak').textContent=S.qStreak;
+  saveS();setTimeout(nextQ,1600);
 }
 
 // ===== ALPHABET =====
-function showAlphabet(lang, el) {
-  state.currentAlphaLang = lang;
-  document.querySelectorAll('#alpha-lang-filter .filter-chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  renderAlphabet(lang);
-  renderAlphaQuiz();
+let curAlpha='ru';
+function showAlpha(s,el){
+  curAlpha=s;
+  document.querySelectorAll('#alpha-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');renderAlpha(s);renderAQ();
 }
-
-function renderAlphabet(lang) {
-  const arr = lang === 'ru' ? RUSSIAN_ALPHABET : ARABIC_ALPHABET;
-  const learned = state.learnedLetters[lang];
-  const container = document.getElementById('alpha-content');
-  const dir = lang === 'ar' ? 'direction:rtl;' : '';
-  container.innerHTML = `
-    <div style="margin-bottom:12px;font-size:11px;color:var(--muted)">
-      ${lang === 'ru' ? 'Russian / Cyrillic Alphabet — 33 letters' : 'Arabic Abjad — 28 letters'}
-      · <span style="color:var(--accent-ar)">${learned.size} learned</span>
-    </div>
-    <div class="alpha-grid" style="${dir}">
-      ${arr.map(l => `
-        <div class="alpha-card ${learned.has(l.c)?'learned':''}" onclick="toggleLetter('${lang}','${l.c}',this)">
-          <span class="alpha-char">${l.c}</span>
-          <div class="alpha-roman">${l.r}</div>
-        </div>`).join('')}
+function renderAlpha(s){
+  const arr=ALPHA[s]||[];
+  const learned=S.letters[s]||new Set();
+  const rtl=['ar','sa'].includes(s);
+  const names={ru:'Russian Cyrillic — 33 letters',ar:'Arabic Abjad — 28 letters','ja-hira':'Hiragana — 46','ja-kata':'Katakana — 46',zh:'Chinese Radicals',sa:'Sanskrit Devanagari — 37',de:'German Special Characters'};
+  document.getElementById('alpha-content').innerHTML=`
+    <div style="font-size:10px;color:var(--muted);margin-bottom:8px;">${names[s]||s} · <span style="color:var(--green)">${learned.size} learned</span> · Click to mark learned</div>
+    <div class="alpha-grid" style="${rtl?'direction:rtl;':''}">
+      ${arr.map(l=>`<div class="achar ${learned.has(l.c)?'learned':''}" onclick="toggleL('${s}','${l.c}',this)">
+        <span class="ac">${l.c}</span><div class="ar2">${l.r}</div>
+      </div>`).join('')}
     </div>`;
 }
-
-function toggleLetter(lang, char, el) {
-  if (state.learnedLetters[lang].has(char)) {
-    state.learnedLetters[lang].delete(char);
-    el.classList.remove('learned');
-  } else {
-    state.learnedLetters[lang].add(char);
-    el.classList.add('learned');
-  }
-  saveState();
+function toggleL(s,c,el){
+  if(!S.letters[s])S.letters[s]=new Set();
+  if(S.letters[s].has(c)){S.letters[s].delete(c);el.classList.remove('learned');}
+  else{S.letters[s].add(c);el.classList.add('learned');}
+  saveS();
 }
-
-// Alphabet Quiz
-let currentAlphaChar = null;
-
-function renderAlphaQuiz() {
-  const lang = state.currentAlphaLang;
-  const arr = lang === 'ru' ? RUSSIAN_ALPHABET : ARABIC_ALPHABET;
-  currentAlphaChar = arr[Math.floor(Math.random() * arr.length)];
-  document.getElementById('aq-lang').textContent = lang === 'ru' ? 'Cyrillic' : 'Arabic';
-  const charEl = document.getElementById('aq-char');
-  charEl.textContent = currentAlphaChar.c;
-  charEl.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
-  document.getElementById('aq-hint').textContent = 'What is the romanization of this character?';
-
-  const wrong = arr.filter(l => l.c !== currentAlphaChar.c).sort(() => Math.random()-0.5).slice(0,3);
-  const options = [currentAlphaChar, ...wrong].sort(() => Math.random()-0.5);
-
-  const fb = document.getElementById('aq-feedback');
-  fb.className = 'quiz-feedback';
-
-  document.getElementById('aq-options').innerHTML = options.map(o =>
-    `<button class="quiz-option" onclick="answerAlpha('${o.c === currentAlphaChar.c}', this, '${o.r}')">${o.r}</button>`
-  ).join('');
+let curAQ=null;
+function renderAQ(){
+  const arr=ALPHA[curAlpha]||[];if(!arr.length)return;
+  curAQ=arr[Math.floor(Math.random()*arr.length)];
+  const names={ru:'Cyrillic',ar:'Arabic','ja-hira':'Hiragana','ja-kata':'Katakana',zh:'Chinese',sa:'Devanagari',de:'German'};
+  document.getElementById('aq-lang').textContent=names[curAlpha]||curAlpha;
+  const ce=document.getElementById('aq-char');
+  ce.textContent=curAQ.c;
+  ce.style.direction=['ar','sa'].includes(curAlpha)?'rtl':'ltr';
+  document.getElementById('aq-fb').className='qfb';
+  const wrong=arr.filter(l=>l.c!==curAQ.c).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[curAQ,...wrong].sort(()=>Math.random()-.5);
+  document.getElementById('aq-opts').innerHTML=opts.map(o=>`<button class="qopt" onclick="ansAQ(${o.c===curAQ.c},this,'${o.r}')">${o.r}</button>`).join('');
 }
-
-function answerAlpha(isCorrect, el, romanization) {
-  document.querySelectorAll('#aq-options .quiz-option').forEach(b => b.disabled = true);
-  const fb = document.getElementById('aq-feedback');
-  if (isCorrect === 'true') {
-    el.classList.add('correct');
-    fb.textContent = `✓ Correct! ${currentAlphaChar.c} = ${currentAlphaChar.r}`;
-    fb.className = 'quiz-feedback show correct-fb';
-    state.learnedLetters[state.currentAlphaLang].add(currentAlphaChar.c);
-  } else {
-    el.classList.add('wrong');
-    document.querySelectorAll('#aq-options .quiz-option').forEach(b => {
-      if (b.textContent.trim() === currentAlphaChar.r) b.classList.add('correct');
-    });
-    fb.textContent = `✗ That's ${romanization}. ${currentAlphaChar.c} = ${currentAlphaChar.r}`;
-    fb.className = 'quiz-feedback show wrong-fb';
+function ansAQ(correct,el,r){
+  document.querySelectorAll('#aq-opts .qopt').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('aq-fb');
+  if(correct){
+    el.classList.add('ok');fb.textContent='✓ '+curAQ.c+' = '+curAQ.r;fb.className='qfb show ok';
+    if(!S.letters[curAlpha])S.letters[curAlpha]=new Set();
+    S.letters[curAlpha].add(curAQ.c);
+  }else{
+    el.classList.add('no');
+    document.querySelectorAll('#aq-opts .qopt').forEach(b=>{if(b.textContent.trim()===curAQ.r)b.classList.add('ok');});
+    fb.textContent='✗ That\'s '+r+'. '+curAQ.c+' = '+curAQ.r;fb.className='qfb show no';
   }
-  saveState();
-  setTimeout(renderAlphaQuiz, 1800);
+  saveS();setTimeout(renderAQ,1600);
 }
+function nextAQ(){renderAQ();}
 
-function nextAlphaQuiz() { renderAlphaQuiz(); }
-
-// ===== SAVED PAGE =====
-function renderSaved() {
-  const grid = document.getElementById('saved-grid');
-  const articles = ARTICLES.filter(a => state.savedArticles.has(a.id) || state.readArticles.has(a.id));
-  if (articles.length === 0) {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>No saved or read articles yet.</p></div>';
-    return;
-  }
-  grid.innerHTML = articles.map(a => {
-    const isRead = state.readArticles.has(a.id);
-    const isSaved = state.savedArticles.has(a.id);
-    return `<div class="article-card lang-${a.lang} ${isRead?'read':''}" onclick="openReader('${a.id}')">
-      <div class="article-meta">
-        <span class="lang-badge badge-${a.lang}">${a.lang.toUpperCase()}</span>
-        <span class="topic-badge">${a.topic}</span>
-        ${isSaved ? '<span class="inline-badge badge-saved">SAVED</span>' : ''}
-        ${isRead ? '<span class="inline-badge" style="background:rgba(52,211,153,0.12);color:var(--accent-ar)">READ</span>' : ''}
-      </div>
-      <div class="article-title">${a.title}</div>
-      <div class="article-snippet">${a.snippet}</div>
-      <div class="article-footer">
-        <span class="read-time">${a.readTime} · ${a.source}</span>
-      </div>
-    </div>`;
-  }).join('');
+// ===== SAVED =====
+function renderSaved(){
+  const arts=allArts().filter(a=>S.saved.has(a.id)||S.read.has(a.id));
+  const g=document.getElementById('saved-grid');
+  if(!arts.length){g.innerHTML='<div class="empty" style="grid-column:1/-1;">No saved articles yet.</div>';return;}
+  g.innerHTML=arts.map(cardHTML).join('');
 }
 
 // ===== STATS =====
-function renderStats() {
-  document.getElementById('stat-read').textContent = state.readArticles.size;
-  document.getElementById('stat-words').textContent = state.vocabBank.filter(w => w.mastery >= 2).length;
-  document.getElementById('stat-streak').textContent = state.quizStreak;
+function renderStats(){
+  document.getElementById('s-read').textContent=S.read.size;
+  document.getElementById('s-words').textContent=S.vocab.filter(w=>w.mastery>=2).length;
+  document.getElementById('s-streak').textContent=S.qStreak;
+  document.getElementById('s-nodes').textContent=S.nodes.length;
 }
-
-function renderLangBalance() {
-  const counts = {en:0, es:0, ru:0, ar:0};
-  state.readArticles.forEach(id => {
-    const a = ARTICLES.find(x => x.id === id);
-    if (a) counts[a.lang]++;
-  });
-  const total = Math.max(1, Object.values(counts).reduce((a,b)=>a+b,0));
-  ['en','es','ru','ar'].forEach(l => {
-    document.getElementById('prog-'+l).style.width = Math.round(100*counts[l]/total) + '%';
-    document.getElementById('prog-'+l+'-n').textContent = counts[l] + ' article' + (counts[l]!==1?'s':'');
-  });
+function renderLangBal(){
+  const counts={en:0,es:0,ru:0,ar:0,de:0,ja:0,zh:0,sa:0};
+  S.read.forEach(id=>{const a=allArts().find(x=>x.id===id);if(a)counts[a.lang]=(counts[a.lang]||0)+1;});
+  const total=Math.max(1,Object.values(counts).reduce((a,b)=>a+b,0));
+  const c=document.getElementById('lang-bal');
+  const colors={en:'var(--en)',es:'var(--es)',ru:'var(--ru)',ar:'var(--ar)',de:'var(--de)',ja:'var(--ja)',zh:'var(--zh)',sa:'var(--sa)'};
+  const names={en:'English',es:'Español',ru:'Русский',ar:'العربية',de:'Deutsch',ja:'日本語',zh:'中文',sa:'संस्कृत'};
+  c.innerHTML=Object.keys(counts).map(l=>`
+    <div style="margin-bottom:7px;">
+      <div style="display:flex;justify-content:space-between;font-size:9px;margin-bottom:2px;">
+        <span style="color:${colors[l]}">${names[l]}</span>
+        <span style="color:var(--muted)">${counts[l]}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="background:${colors[l]};width:${Math.round(100*counts[l]/total)}%"></div></div>
+    </div>`).join('');
+}
+function renderBiasDist(){
+  const bc={};
+  allArts().forEach(a=>{const b=BIAS[a.source];if(b)bc[b.l]=(bc[b.l]||0)+1;});
+  const colors={'Left':'#93c5fd','Lean Left':'#bfdbfe','Center':'#9ca3af','Lean Right':'#fca5a5','Right':'#f87171','Academic':'var(--zh)','Neutral':'var(--muted)'};
+  document.getElementById('bias-dist').innerHTML=Object.entries(bc).map(([l,n])=>`
+    <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+      <span style="color:${colors[l]||'var(--muted)'};font-size:9px;">${l}</span>
+      <span style="color:var(--muted);font-size:9px;">${n}</span>
+    </div>`).join('');
 }
 
 // ===== TIMER =====
-function toggleTimer() {
-  if (state.timerRunning) {
-    clearInterval(state.timerInterval);
-    state.timerRunning = false;
-    document.getElementById('timer-btn').textContent = 'RESUME SESSION';
-    saveState();
-  } else {
-    state.timerRunning = true;
-    document.getElementById('timer-btn').textContent = 'PAUSE SESSION';
-    state.timerInterval = setInterval(() => {
-      state.timerSeconds++;
-      updateTimerDisplay();
-      if (state.timerSeconds % 60 === 0) saveState();
-    }, 1000);
+function toggleTimer(){
+  if(S.timerOn){
+    clearInterval(S.timerInt);S.timerOn=false;
+    document.getElementById('timer-btn').textContent='START';saveS();
+  }else{
+    S.timerOn=true;document.getElementById('timer-btn').textContent='PAUSE';
+    S.timerInt=setInterval(()=>{S.timerSec++;updateTimer();if(S.timerSec%60===0)saveS();},1000);
   }
 }
-
-function updateTimerDisplay() {
-  const h = Math.floor(state.timerSeconds / 3600);
-  const m = Math.floor((state.timerSeconds % 3600) / 60);
-  const s = state.timerSeconds % 60;
-  document.getElementById('timer-display').textContent =
-    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-  const goalSeconds = 6 * 3600;
-  const pct = Math.min(100, Math.round(100 * state.timerSeconds / goalSeconds));
-  document.getElementById('goal-fill').style.width = pct + '%';
-  const goalHours = (state.timerSeconds / 3600).toFixed(1);
-  document.getElementById('goal-text').textContent = goalHours + 'h / 6h goal';
+function updateTimer(){
+  const h=Math.floor(S.timerSec/3600),m=Math.floor((S.timerSec%3600)/60),s=S.timerSec%60;
+  document.getElementById('timer').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('goal-fill').style.width=Math.min(100,Math.round(100*S.timerSec/21600))+'%';
+  document.getElementById('goal-txt').textContent=(S.timerSec/3600).toFixed(1)+'h / 6h';
 }
-
-// ===== START =====
-init();
 </script>
 </body>
 </html>
