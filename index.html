@@ -468,6 +468,16 @@ textarea{font-family:var(--mono);}
       <div class="page" id="page-cce">
         <div class="sh"><span class="st">CCE-G — Cognitive Compression Engine</span></div>
 
+        <!-- API Key Settings -->
+        <div id="api-settings" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:10px;color:var(--muted);">AI Engine:</span>
+          <span id="api-status-badge" style="font-size:10px;color:var(--red);">⚠ No API key</span>
+          <button onclick="setApiKey()" class="btn btn-g" style="font-size:10px;padding:3px 10px;">Set Gemini Key (FREE)</button>
+          <button onclick="clearApiKey()" class="btn" style="font-size:10px;padding:3px 10px;">Clear Key</button>
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:10px;color:var(--en);">Get free key ↗</a>
+          <span style="font-size:10px;color:var(--muted);margin-left:auto;">Google Gemini — 1M tokens/day free, no credit card</span>
+        </div>
+
         <!-- LaTeX Research Paper Generator -->
         <div style="background:var(--bg2);border:1px solid var(--purple);border-radius:var(--rl);padding:16px;margin-bottom:16px;">
           <div class="sl" style="color:var(--purple);">LaTeX Research Paper → AI Idea Generator</div>
@@ -880,6 +890,7 @@ function init(){
   renderMinedGrid();
   renderNodes();
   renderLangSections();
+  updateApiStatusBadge();
 }
 
 // ===== NAV =====
@@ -1007,102 +1018,155 @@ async function startMining(){
   S.miningOn=true;
   const btn=document.getElementById('mine-btn');
   btn.textContent='⏳ Mining...';btn.disabled=true;
-  document.getElementById('mine-status').textContent='Mining...';
+  document.getElementById('mine-status').textContent='Mining in progress...';
   document.getElementById('mine-log').innerHTML='';
   let fetched=0;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const wikiLangs={en:'en',es:'es',ru:'ru',ar:'ar',de:'de',ja:'ja',zh:'zh',sa:'sa'};
-  const topics=[...S.mineTopics];
+
+  // Native-language Wikipedia queries (fixes 404 errors)
+  const WIKI_NATIVE={
+    en:['mathematics','physics','organic_chemistry','neurosurgery','calculus','topology','surgery'],
+    es:['matemáticas','física','química_orgánica','neurocirugía','cálculo'],
+    ru:['математика','физика','органическая_химия','нейрохирургия','квантовая_механика'],
+    ar:['رياضيات','فيزياء','الكيمياء_العضوية','جراحة_الأعصاب','تفاضل_وتكامل'],
+    de:['Mathematik','Physik','Organische_Chemie','Neurochirurgie','Quantenmechanik'],
+    ja:['数学','物理学','有機化学','脳神経外科学','量子力学'],
+    zh:['数学','物理学','有机化学','神经外科学','量子力学'],
+    sa:['गणितम्','भौतिकशास्त्रम्','रसायनशास्त्रम्','शल्यचिकित्सा'],
+  };
+  const TOPIC_MAP={
+    'mathematics':'mathematics','physics':'physics','organic_chemistry':'chemistry',
+    'neurosurgery':'neurosurgery','calculus':'mathematics','topology':'mathematics',
+    'surgery':'surgery','matemáticas':'mathematics','física':'physics',
+    'química_orgánica':'chemistry','neurocirugía':'neurosurgery','cálculo':'mathematics',
+    'математика':'mathematics','физика':'physics','органическая_химия':'chemistry',
+    'нейрохирургия':'neurosurgery','квантовая_механика':'physics',
+    'رياضيات':'mathematics','فيزياء':'physics','الكيمياء_العضوية':'chemistry',
+    'جراحة_الأعصاب':'neurosurgery','تفاضل_وتكامل':'mathematics',
+    'Mathematik':'mathematics','Physik':'physics','Organische_Chemie':'chemistry',
+    'Neurochirurgie':'neurosurgery','Quantenmechanik':'physics',
+    '数学':'mathematics','物理学':'physics','有機化学':'chemistry',
+    '脳神経外科学':'neurosurgery','量子力学':'physics','有机化学':'chemistry',
+    '神经外科学':'neurosurgery','गणितम्':'mathematics','भौतिकशास्त्रम्':'physics',
+    'रसायनशास्त्रम्':'chemistry','शल्यचिकित्सा':'surgery',
+  };
 
   if(S.activeSrc.has('wikipedia')){
-    for(const lang of Object.keys(wikiLangs)){
-      for(const topic of topics.slice(0,2)){
+    for(const [lang,queries] of Object.entries(WIKI_NATIVE)){
+      for(const q of queries.slice(0,3)){
         try{
-          logM(`Wikipedia [${lang}]: ${topic}`);
-          const q=encodeURIComponent(topic==='chemistry'?'organic chemistry':topic==='cognitive'?'cognitive science':topic==='walking'?'physical fitness':topic);
-          const r=await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${q}`);
-          if(!r.ok)throw new Error(r.status);
+          logM(`Wikipedia [${lang}]: ${q}`);
+          const url=`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`;
+          const r=await fetch(url);
+          if(!r.ok)throw new Error('HTTP '+r.status);
           const d=await r.json();
-          if(d.extract&&d.extract.length>150&&!S.mined.find(a=>a.title===d.title&&a.lang===lang)){
-            const wc=d.extract.split(' ').length;
-            S.mined.push({
-              id:'w_'+lang+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-              lang,topic,source:'Wikipedia',
-              title:d.title,
-              snippet:d.extract.substring(0,200)+'...',
-              text:'<p>'+d.extract.replace(/\n\n/g,'</p><p>')+'</p>',
-              vocab:[],readTime:Math.max(8,Math.round(wc/200))+' min',
-              url:d.content_urls?.desktop?.page||'',
-            });
-            fetched++;logM(`✓ "${d.title}" (${lang})`,'ok');
+          if(d.extract&&d.extract.length>150){
+            const existing=S.mined.find(a=>a.title===d.title&&a.lang===lang);
+            if(!existing){
+              const wc=d.extract.split(' ').length;
+              const topic=TOPIC_MAP[q]||'general';
+              S.mined.push({
+                id:'w_'+lang+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+                lang,topic,source:'Wikipedia',
+                title:d.title,
+                snippet:d.extract.substring(0,220)+'...',
+                text:'<p>'+d.extract.replace(/\n\n/g,'</p><p>')+'</p>',
+                vocab:[],
+                readTime:Math.max(8,Math.round(wc/200))+' min',
+                url:d.content_urls?.desktop?.page||'',
+                wikiPage:q,
+              });
+              fetched++;
+              logM(`✓ "${d.title}" (${lang})`,'ok');
+            } else {
+              logM(`— Already have: "${d.title}"`);
+            }
           }
-          await sleep(250);
-        }catch(e){logM(`✗ ${lang}/${topic}: ${e.message}`,'er');}
+          await sleep(300);
+        }catch(e){logM(`✗ ${lang}/${q}: ${e.message}`,'er');}
       }
     }
   }
 
+  // arXiv via CORS proxy (fixes NetworkError)
   if(S.activeSrc.has('arxiv')){
-    const qs=[{q:'glioblastoma surgery resection',t:'neurosurgery'},{q:'prime numbers zeta function',t:'mathematics'},{q:'organic synthesis stereoselective',t:'chemistry'},{q:'quantum mechanics topological',t:'physics'},{q:'deep brain stimulation parkinson',t:'neurosurgery'},{q:'general surgery laparoscopic',t:'surgery'}];
-    for(const {q,t} of qs.slice(0,4)){
+    const PROXY='https://api.allorigins.win/raw?url=';
+    const arxivQ=[
+      {q:'glioblastoma+surgery+resection',t:'neurosurgery'},
+      {q:'prime+numbers+zeta+function',t:'mathematics'},
+      {q:'organic+synthesis+asymmetric+catalysis',t:'chemistry'},
+      {q:'quantum+mechanics+topological',t:'physics'},
+      {q:'laparoscopic+surgery+outcomes',t:'surgery'},
+    ];
+    for(const {q,t} of arxivQ){
       try{
-        logM(`arXiv: ${q}`);
-        const r=await fetch(`https://export.arxiv.org/api/query?search_query=all:${encodeURIComponent(q)}&max_results=2&sortBy=relevance`);
+        logM(`arXiv: ${q.replace(/\+/g,' ')}`);
+        const arxivUrl=`https://export.arxiv.org/api/query?search_query=all:${q}&max_results=2&sortBy=relevance`;
+        const r=await fetch(PROXY+encodeURIComponent(arxivUrl));
+        if(!r.ok)throw new Error('HTTP '+r.status);
         const txt=await r.text();
         const xml=new DOMParser().parseFromString(txt,'text/xml');
         xml.querySelectorAll('entry').forEach(e=>{
-          const title=e.querySelector('title')?.textContent?.trim()||'';
+          const title=e.querySelector('title')?.textContent?.trim().replace(/\s+/g,' ')||'';
           const summary=e.querySelector('summary')?.textContent?.trim()||'';
-          if(summary.length>100&&!S.mined.find(a=>a.title===title)){
+          const arxivId=e.querySelector('id')?.textContent?.trim()||'';
+          if(summary.length>80&&title&&!S.mined.find(a=>a.title===title)){
             S.mined.push({
-              id:'ax_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+              id:'ax_'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
               lang:'en',topic:t,source:'arXiv',title,
-              snippet:summary.substring(0,200)+'...',
+              snippet:summary.substring(0,220)+'...',
               text:'<p>'+summary.replace(/\n\n/g,'</p><p>')+'</p>',
               vocab:[],readTime:Math.max(15,Math.round(summary.split(' ').length/180))+' min',
+              url:arxivId,wikiPage:'',
             });
-            fetched++;logM(`✓ arXiv: "${title.substring(0,45)}..."`,'ok');
+            fetched++;
+            logM(`✓ arXiv: "${title.substring(0,50)}"`,'ok');
           }
         });
-        await sleep(400);
-      }catch(e){logM(`✗ arXiv: ${e.message}`,'er');}
+        await sleep(500);
+      }catch(e){logM(`✗ arXiv ${q}: ${e.message}`,'er');}
     }
   }
 
+  // PubMed via allorigins proxy
   if(S.activeSrc.has('pubmed')){
-    const pmTopics=['neurosurgery craniotomy','laparoscopic surgery outcomes','brain tumor resection'];
-    for(const pt of pmTopics.slice(0,2)){
+    const PROXY='https://api.allorigins.win/raw?url=';
+    const pmQ=['neurosurgery+craniotomy','brain+tumor+surgery','laparoscopic+surgery'];
+    for(const pt of pmQ.slice(0,2)){
       try{
-        logM(`PubMed: ${pt}`);
-        const searchR=await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${encodeURIComponent(pt)}&retmax=3&retmode=json`);
-        const searchD=await searchR.json();
-        const ids=searchD.esearchresult?.idlist||[];
+        logM(`PubMed: ${pt.replace(/\+/g,' ')}`);
+        const searchUrl=`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${pt}&retmax=3&retmode=json`;
+        const sr=await fetch(PROXY+encodeURIComponent(searchUrl));
+        const sd=await sr.json();
+        const ids=sd.esearchresult?.idlist||[];
         for(const pmid of ids.slice(0,2)){
-          const sumR=await fetch(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`);
+          const sumUrl=`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=${pmid}&retmode=json`;
+          const sumR=await fetch(PROXY+encodeURIComponent(sumUrl));
           const sumD=await sumR.json();
           const art=sumD.result?.[pmid];
-          if(art&&art.title&&!S.mined.find(a=>a.title===art.title)){
+          if(art?.title&&!S.mined.find(a=>a.title===art.title)){
             S.mined.push({
               id:'pm_'+pmid,lang:'en',topic:'surgery',source:'PubMed',
               title:art.title,
-              snippet:`Published ${art.pubdate||''}. Authors: ${(art.authors||[]).slice(0,3).map(a=>a.name).join(', ')}. Source: ${art.source||'PubMed'}.`,
-              text:`<p>${art.title}</p><p>Published: ${art.pubdate||'N/A'} | Journal: ${art.source||'N/A'} | PMID: ${pmid}</p><p>Access full text at: <a href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/" target="_blank" style="color:var(--en)">PubMed ↗</a></p>`,
-              vocab:[],readTime:'20+ min',
-              url:`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+              snippet:`${art.pubdate||''} | ${art.source||'PubMed'} | Authors: ${(art.authors||[]).slice(0,3).map(a=>a.name).join(', ')}`,
+              text:`<p><strong>${art.title}</strong></p><p>Published: ${art.pubdate||'N/A'} | Journal: ${art.source||'N/A'} | PMID: ${pmid}</p><p><a href="https://pubmed.ncbi.nlm.nih.gov/${pmid}/" target="_blank" style="color:var(--en)">Read on PubMed ↗</a></p>`,
+              vocab:[],readTime:'20+ min',url:`https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,wikiPage:'',
             });
-            fetched++;logM(`✓ PubMed: "${art.title.substring(0,45)}..."`,'ok');
+            fetched++;
+            logM(`✓ PubMed: "${art.title.substring(0,50)}"`,'ok');
           }
-          await sleep(200);
+          await sleep(250);
         }
       }catch(e){logM(`✗ PubMed: ${e.message}`,'er');}
     }
   }
 
-  logM(`Done. ${fetched} new articles.`,'ok');
-  document.getElementById('mine-status').textContent=`Last mined: +${fetched} articles`;
+  logM(`Mining complete. ${fetched} new articles added.`,'ok');
+  document.getElementById('mine-status').textContent=`Last mined: +${fetched} new articles`;
   S.miningOn=false;btn.textContent='⚡ MINE NOW';btn.disabled=false;
   saveS();renderMinedGrid();renderFeed();renderLangBal();renderLangSections();
 }
+
 function renderMinedGrid(){
   document.getElementById('mined-ct').textContent=S.mined.length+' articles';
   const g=document.getElementById('mined-grid');
@@ -1114,71 +1178,82 @@ function renderMinedGrid(){
 async function generateIdeas(){
   const latex=document.getElementById('latex-in').value.trim();
   if(!latex){alert('Paste your LaTeX code first.');return;}
+
+  // Check for API key
+  let apiKey = localStorage.getItem('gemini_api_key');
+  if(!apiKey){
+    apiKey = prompt('Enter your FREE Google Gemini API key\n\nGet one free at: https://aistudio.google.com/app/apikey\n(No credit card required, 1M tokens/day free)');
+    if(!apiKey)return;
+    localStorage.setItem('gemini_api_key', apiKey.trim());
+  }
+
   document.getElementById('ai-status').style.display='flex';
   document.getElementById('gen-btn').disabled=true;
   document.getElementById('ideas-output').style.display='none';
 
   try{
     const minedTitles=S.mined.slice(-10).map(a=>a.title).join('; ');
+    const nodeNames=S.nodes.slice(-5).map(n=>n.name).join('; ');
     const prompt=`You are a research paper idea generator for an INTJ scientist specializing in mathematics, physics, organic chemistry, neurosurgery, and surgery.
 
-The researcher has provided this LaTeX paper:
-${latex.substring(0,2000)}
+The researcher provided this LaTeX paper excerpt:
+${latex.substring(0,2500)}
 
-Recently mined related papers: ${minedTitles||'none yet'}
+Recently mined papers: ${minedTitles||'none'}
+Knowledge graph nodes: ${nodeNames||'none'}
 
-Generate exactly 3 novel research paper ideas that:
-1. Extend or contradict the researcher's work
-2. Connect to adjacent fields (e.g., math+neurosurgery, chemistry+surgery)
-3. Are specific and actionable
+Generate exactly 3 novel research paper ideas that extend or connect to this work.
+For each idea respond in STRICT JSON only (no markdown, no backticks):
+{"ideas":[{"title":"Full title","abstract":"2-3 sentence abstract","methods":"Key methodology","connection":"How it connects","latex":"\\documentclass{article}\n\\usepackage{amsmath}\n\\begin{document}\n\\title{TITLE}\n\\author{Andre}\n\\maketitle\n\\begin{abstract}\nABSTRACT\n\\end{abstract}\n\\section{Introduction}\nINTRODUCTION\n\\section{Methods}\nMETHODS\n\\section{Results and Discussion}\nDISCUSSION\n\\section{Conclusion}\nCONCLUSION\n\\end{document}"}]}`;
 
-For each idea, respond in this EXACT JSON format only (no markdown, no explanation outside JSON):
-{
-  "ideas": [
-    {
-      "title": "Full paper title",
-      "abstract": "2-3 sentence abstract",
-      "methods": "Key methodology in 1-2 sentences",
-      "connection": "How it connects to the input paper",
-      "latex": "\\\\documentclass{article}\\n\\\\begin{document}\\n\\\\title{TITLE}\\n\\\\begin{abstract}\\nABSTRACT\\n\\\\end{abstract}\\n\\\\section{Introduction}\\nINTRODUCTION TEXT\\n\\\\section{Methods}\\nMETHODS TEXT\\n\\\\section{Conclusion}\\nCONCLUSION TEXT\\n\\\\end{document}"
-    }
-  ]
-}`;
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}],
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{temperature:0.7,maxOutputTokens:2048},
       }),
     });
+
+    if(resp.status===400){
+      localStorage.removeItem('gemini_api_key');
+      throw new Error('Invalid API key. Please try again with a valid Gemini API key from aistudio.google.com');
+    }
+    if(!resp.ok) throw new Error('API error: HTTP '+resp.status);
+
     const data=await resp.json();
-    const text=data.content?.map(c=>c.text||'').join('')||'';
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'';
     let parsed;
     try{
       const clean=text.replace(/```json|```/g,'').trim();
       parsed=JSON.parse(clean);
     }catch(e){
-      parsed={ideas:[{
-        title:'AI Response (parsing error)',
-        abstract:text.substring(0,300),
-        methods:'See raw output above.',
-        connection:'Direct extension of your work.',
-        latex:'% See abstract above\n\\documentclass{article}\n\\begin{document}\n'+text.substring(0,500)+'\n\\end{document}',
-      }]};
+      // Try to extract JSON from response
+      const match=text.match(/\{[\s\S]*\}/);
+      try{ parsed=JSON.parse(match?.[0]||'{}'); }
+      catch(e2){
+        parsed={ideas:[{
+          title:'AI Response',abstract:text.substring(0,300),
+          methods:'See output above.',connection:'Direct extension of your work.',
+          latex:'\\documentclass{article}\n\\begin{document}\n\\title{Research Idea}\n\\end{document}',
+        }]};
+      }
     }
     S.ideas=parsed.ideas||[];
     renderIdeas();
     document.getElementById('ideas-output').style.display='block';
   }catch(e){
-    document.getElementById('ideas-list').innerHTML=`<div style="color:var(--red);font-size:11px;">Error: ${e.message}. Make sure you're using the Claude API-enabled version.</div>`;
+    document.getElementById('ideas-list').innerHTML=`<div style="color:var(--red);font-size:11px;padding:12px;background:var(--bg3);border-radius:var(--r);">
+      <strong>Error:</strong> ${e.message}<br><br>
+      Get a free Gemini API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--en)">aistudio.google.com ↗</a>
+      <br><button onclick="localStorage.removeItem('gemini_api_key');generateIdeas();" style="margin-top:8px;background:none;border:1px solid var(--border2);color:var(--muted);padding:3px 9px;border-radius:var(--r);cursor:pointer;font-family:var(--mono);font-size:10px;">Reset API Key</button>
+    </div>`;
     document.getElementById('ideas-output').style.display='block';
   }
   document.getElementById('ai-status').style.display='none';
   document.getElementById('gen-btn').disabled=false;
 }
+
 
 function renderIdeas(){
   const c=document.getElementById('ideas-list');
@@ -1506,6 +1581,33 @@ function updateTimer(){
   document.getElementById('timer').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
   document.getElementById('goal-fill').style.width=Math.min(100,Math.round(100*S.timerSec/21600))+'%';
   document.getElementById('goal-txt').textContent=(S.timerSec/3600).toFixed(1)+'h / 6h';
+}
+
+
+// ===== API KEY MANAGEMENT =====
+function updateApiStatusBadge(){
+  const key=localStorage.getItem('gemini_api_key');
+  const badge=document.getElementById('api-status-badge');
+  if(!badge)return;
+  if(key){
+    badge.textContent='✓ Gemini API key set';
+    badge.style.color='var(--green)';
+  } else {
+    badge.textContent='⚠ No API key set';
+    badge.style.color='var(--red)';
+  }
+}
+function setApiKey(){
+  const key=prompt('Paste your Google Gemini API key:\n\n1. Go to https://aistudio.google.com/app/apikey\n2. Click "Create API Key"\n3. Copy and paste it here\n\n(Completely free, no credit card needed)');
+  if(key&&key.trim()){
+    localStorage.setItem('gemini_api_key',key.trim());
+    updateApiStatusBadge();
+    alert('✓ API key saved! You can now generate research paper ideas.');
+  }
+}
+function clearApiKey(){
+  localStorage.removeItem('gemini_api_key');
+  updateApiStatusBadge();
 }
 
 // ===== LOAD FULL WIKIPEDIA ARTICLE =====
